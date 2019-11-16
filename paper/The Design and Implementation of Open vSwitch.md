@@ -75,7 +75,9 @@ While the lookup complexity of tuple space search is far from the state of the a
 
 在2007年，为了取得好的性能，最初的实现把所有的包处理都放到内核模块中处理。这个方法很快就变得不可行，因为开发，部署，升级内核模块不是一件容易的事。
 
-我们的解决方案是重新设计内核模块作为一个microflow cache，这个cache里单个表现就可以匹配该包的所有头。性能的关键瓶颈在于flow setup time:内核报告一个miss包给用户空间到用户空间回复的时间。
+Our solution was to reimplement the kernel module as a microflow cache in which a single cache entry exact matches with **all the packet header fields** supported by OpenFlow.  （我们的解决方案是重新设计内核模块作为一个microflow cache，这个cache里单个表现就可以匹配该包的所有头。性能的关键瓶颈在于flow setup time:内核报告一个miss包给用户空间到用户空间回复的时间。）
+
+
 
 将一起到达的miss包批量处理，减少系统调用，提升了大约24%的setup性能。
 
@@ -101,7 +103,7 @@ Lookup in a tuple space search classifier ordinarily requires searching every tu
 
 ![1573803140008](image/1573803140008.png)
 
-We improved on this by tracking, in each tuple T, the maximum priority T.pri_max of any flow entry in T. We modified the lookup code to search tuples from greatest to least maximum priority, so that a search that finds a matching flow F with priority F.pri can terminate as soon as it arrives at a tuple whose maximum priority is F.pri or less, since at that point no better match can be found. (每个元组T中保存该元组中所有流最高的优先级T.pri_max，当一个搜索找到一个匹配的流，并且发现该元组的F.pri_max小于或等于该匹配流的优先级后，则可以结束查找了)
+We improved on this by tracking, in each tuple T, the maximum priority T.pri_max of any flow entry in T. We modified the lookup code to search tuples from greatest to least maximum priority, so that a search that finds a matching flow F with priority F.pri can terminate as soon as it arrives at a tuple whose maximum priority is F.pri or less, since at that point no better match can be found. (每个元组T中保存该元组中所有流最高的优先级T.pri_max，当一个搜索找到一个匹配的流，并且发现该元组的F.pri_max小于或等于该匹配流的优先级后，则可以结束查找了，不需要再去找其他元组)
 
 
 
@@ -110,6 +112,8 @@ We improved on this by tracking, in each tuple T, the maximum priority T.pri_max
 The solution we implemented statically divides fields into four groups, in decreasing order of traffic granularity: metadata (e.g., the switch ingress port), L2, L3, and L4. We changed each tuple from a single hash table to an array of four hash tables, called stages: one over metadata fields only, one over metadata and L2 fields, one over metadata, L2, and L3 fields, and one over all fields. 
 
 We divided fields by protocol layer because,as a rule of thumb, in TCP/IP, inner layer headers tend to be more diverse than outer layer headers. At L4, for example, the TCP source and destination ports change on a per-connection basis, but in the metadata layer only a relatively small and static number of ingress ports exist 
+
+With four stages, one might expect the time to search a tuple to quadruple. Our measurements show that, in fact, classification speed actually improves slightly in practice because, when a search terminates at any early stage, the classifier does not have to compute the full hash of all the fields covered by the tuple .
 
 
 
