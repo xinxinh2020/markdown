@@ -34,6 +34,7 @@ systemctl restart openibd # 重启IB驱动
 timedatectl # centos7 查看服务器时间
 timedatectl set-timezone Asia/Shanghai # centos7 修改时区
 sed -i "s/查找字段/替换字段/g"
+python -mjson.tool # 将json字符串格式化显示
 
 ```
 
