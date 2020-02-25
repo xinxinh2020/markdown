@@ -21,11 +21,36 @@ jupyter notebook --allow-root --ip 172.16.108.133 # 运行jupyter,启动notebook
 
 
 
-## JupyterHub安装
+## 使用Docker部署用于测试的JupyterHub
+
+```shell
+# 不推荐在生产上使用这种方式部署
+# 1 安装Docker 1.12以上版本
+
+# 2 生成自签名的ssl证书
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout jupyterhub.key -out jupyterhub.crt
+mkdir -p secrets
+cp jupyterhub.crt jupyterhub.key secrets/
+
+# 3 创建GitHub OAuth APP
+
+# 4 把GitHub OAuth Client ID, Client Secret and OAuth callback url传给jupyterhub运行时
+cd secrets/
+vim oauth.env
+cat oauth.env
+GITHUB_CLIENT_ID=5baa9ff5d43d136482c3
+GITHUB_CLIENT_SECRET=6f0a066ee230c708446aab12552673d67351fa2c
+OAUTH_CALLBACK_URL=https://47.113.94.144/hub/oauth_callback
+
+
+```
 
 
 
-## 常用命令
+
+
+# 常用命令
 
 ```shell
 jupyter notebook # 启动一个notebook服务器
@@ -39,7 +64,7 @@ jupyter notebook # 启动一个notebook服务器
 
 
 
-## 知识点
+# 知识点
 
 `ipython`是一个`python`的交互式`shell`，比默认的`python shell`好用得多。作为Jupiter notebook的一个REPL
 
