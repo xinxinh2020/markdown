@@ -233,6 +233,8 @@ Pangeo是一个由许多开发者合作开发软件和基础设施，以支持�
 
 Use Case.
 
+总结：作用就是用于地理科学数据的分析处理和可视化。
+
 ## Pangeo项目的架构
 
 ![image-20200302114410418](image/image-20200302114410418.png)
@@ -245,11 +247,13 @@ Use Case.
 
 
 
+## Pangeo架构
 
+![image-20200302183250370](image/image-20200302183250370.png)
 
-Spawners出来的是一个Jupyter NoteBook/Lab。
+Spawners出来的是一个JupyterLab（阿里云上的Pangeo环境可以看到它的各个组件）。
 
-## 组件
+## JupyterLab
 
  核心的包：
 
@@ -273,7 +277,11 @@ Spawners出来的是一个Jupyter NoteBook/Lab。
 - [x] xgcm：扩展xarray数据模型以理解有限体积的网格单元(在一般循环模型中很常见)，并为这些网格提供插值和差分操作
 . . . 
 
-examples:
+## 星光应用
+
+## 用户需求？
+
+
 
 
 
