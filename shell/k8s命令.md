@@ -5,6 +5,7 @@
 ```shell
 kubectl version # 查看kubectl版本
 kubectl cluster-info # 查看集群信息
+kubectl api-versions # 获取api-versions信息
 
 # 创建对象
 kubectl run # 创建一个Deployment 
@@ -41,6 +42,8 @@ kubectl exec $POD_NAME pwd # 直接在容器里执行命令，在只有一个容
 kubectl exec -ti $POD_NAME bash # 进入到容器里面
 
 kubectl config view # 查看$KUBECONFIG中包含的配置信息
+kubectl config set-context ns_ctx --namespace=pangeo # 设置上下文
+kubectl config use-context ns_ctx # 使用上下文
 
 # kubeadm
 kubeadm config images list # 查看需要哪些镜像

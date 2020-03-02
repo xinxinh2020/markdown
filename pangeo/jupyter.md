@@ -34,11 +34,20 @@ jupyter notebook --allow-root --ip 172.16.108.133 # 运行jupyter,启动notebook
 # 按照提示用浏览器打开
 ```
 
-
+## JupyterLab安装
+```shell
+# 安装python3
+# 安装conda
+# 安装jupyterlab，安装完要重新打开一个终端
+conda install -c conda-forge jupyterlab
+# 运行jupyterlab
+jupyter lab --allow-root --ip 192.168.23.130
+```
 
 ## 使用Docker部署用于测试的JupyterHub
 
 ```shell
+
 # 不推荐在生产上使用这种方式部署
 # 1 安装Docker 1.12以上版本
 
@@ -79,9 +88,6 @@ jupyter notebook # 启动一个notebook服务器
 ```
 
 
-
-
-
 # 知识点
 
 `ipython`是一个`python`的交互式`shell`，比默认的`python shell`好用得多。作为Jupiter notebook的一个REPL
@@ -91,6 +97,24 @@ REPL：Read-Eval-Print-Loop，提示用户输入代码，用户输入后，执�
 IPython Kernel是一个独立的进程用于运行用户的代码，以及计算可能完成的任务。notebook或qt console等前端通过Json消息与IPython内核通信，Json信息通过ZeroMQ socket发送。一个内核进程可以让多个前端连接，
 
 Jupyter Notebook及其灵活的接口将Notebook从代码扩展到可视化、多媒体、协作等等。除了运行代码之外，它还将代码和输出以及markdown注释存储在一个称为notebook的可编辑文档中，当保存这个文档时，它会被发送到notebook服务器上，服务器会把它保存为一个.ipynb的json文件。注意是notebook server负责保存和加载notebooks，而不是ipython内核，内核只是简单地获取代码并执行。jupyter的Nbconvert工具可以把notebook转换成其它格式，如xml。
+
+jupyterhub/jupyterhub镜像只包含了hub服务。
+/srv/jupyterhub用于存放安全和运行时文件
+/etc/jupyterhub用于存放配置文件。
+JupyterHub默认使用PAM方式使用用户名和密码来认证系统用户。
+
+Jupyter不提供多用户支持，JupyterHub在Jupyter的基础上增加了多用户的支持。
+
+
+
+## URLs
+
+```shell
+# 文件浏览
+http(s)://<server:port>/<lab-location>/lab/tree/path/to/notebook.ipynb
+```
+
+
 
 
 
@@ -120,5 +144,14 @@ notebook文档：
 
 ## 架构图
 
+### Jupyter 
+
 ![Architecture diagram of project relationships](https://jupyter.readthedocs.io/en/latest/_images/repos_map.png)
 
+### JupyterHub
+
+![image-20200226160927763](image/image-20200226160927763.png)
+
+```
+
+```
