@@ -27,6 +27,7 @@ Dask强调以下美德:
 
 ```shell
 conda install dask # 安装dask及其所有依赖
+conda install dask-jobqueue -c conda-forge # 安装dask-jobqueue
 ```
 
 ## 设置
@@ -123,13 +124,103 @@ dask-worker tcp://172.18.213.142:30001
 # 示例
 
 ```shell
-
 import dask.array as da
 x = da.random.random((40000, 40000), chunks=(1000, 1000))
 da.exp(x).sum().compute()  # 可以查看机器CPU
 ```
 
 # Scheduling
+
+# Dask-Jobqueue
+
+当启动一个dask_jobqueue的时候，也会自动启动一个dask dashboard。Dask集群生成一个传统的作业脚本，并将其提交到作业队列。可以通过命令print(cluster.job_script())来看到生成的脚本，类似如下：
+
+```shell
+#!/usr/bin/env zsh
+
+#PBS -N dask-worker
+#PBS -q regular
+#PBS -A P48500028
+#PBS -l select=1:ncpus=24:mem=100G
+#PBS -l walltime=02:00:00
+
+/home/username/path/to/bin/dask-worker tcp://127.0.1.1:43745
+--nthreads 4 --nprocs 6 --memory-limit 18.66GB --name dask-worker-3
+--death-timeout 60
+```
+
+每个作业都被独立地发送到作业队列，一旦该作业启动，一个dask-worker进程将启动并连接到运行的调度器上.如果工作队列很忙，那么worker可能需要一段时间才能通过，或者不是所有worker都到达。在实践中，我们发现，由于dask-jobqueue提交许多小作业，而不是单个大作业，所以worker通常能够相对较快地启动。这将取决于您的集群的作业队列的状态。
+
+当cluster对象消失时，不管是因为您删除它，还是因为您关闭了Python程序，它将向worker发送一个信号，让其关闭。如果由于某种原因这个信号没有通过，那么worker将在等待一个不存在的scheduler 60秒后自杀。
+
+在dask-distributed中，一个Worker是一个python对象，dask Cluster中的节点，用于服务数据和执行计算。Jobs是提交到作业队列系统（PBS等）上并被其管理的资源。在一个Job中可能包含有多个worker。
+
+## 配置
+
+可以将关键字传递给Cluster对象，定义Dask-jobqueue应该如何定义**单个作业**(而不是整个集群)：
+
+```shell
+cluster = PBSCluster(
+     # Dask-worker specific keywords
+     cores=24,             # Number of cores per job 
+     memory='100GB',       # Amount of memory per job
+     shebang='#!/usr/bin/env zsh',   # Interpreter for your batch script (default is bash)
+     processes=6,          # Number of Python processes to cut up each job
+     local_directory='$TMPDIR',  # Location to put temporary data if necessary
+     # Job scheduler specific keywords
+     resource_spec='select=1:ncpus=24:mem=100GB',
+     queue='regular',
+     project='my-project',
+     walltime='02:00:00',
+)
+```
+
+cores和memory指定的是单个Job的配置，所以不能超过单台机器的大小。
+
+另外，可以使用scale方法来指定要运行多少作业：
+
+```shell
+cluster.scale(jobs=2)  # launch 2 workers, each of which starts 6 worker processes
+cluster.scale(cores=48)  # Or specify cores or memory directly
+cluster.scale(memory="200 GB")  # Or specify cores or memory directly
+```
+
+每次向集群构造函数指定所有参数都可能出错,特别是在与新用户共享此工作流时。相反，我们建议使用如下配置文件(默认保持在~/.config/dask/目录下):
+
+```shell
+# jobqueue.yaml file
+jobqueue:
+  pbs:
+    cores: 24
+    memory: 100GB
+    processes: 6
+    shebang: "#!/usr/bin/env zsh"
+
+    interface: ib0
+    local-directory: $TMPDIR
+
+    resource-spec: "select=1:ncpus=24:mem=100GB"
+    queue: regular
+    project: my-project
+    walltime: 00:30:00
+```
+
+当创建cluster时不显式指定参数时（如cluster = PBSCluster()），则会使用上述默认配置。如果把配置文件放在/etc/dask目录下，则会对所有用户生效。
+
+
+
+# Kubernetes
+
+## 安装Dask
+
+通过relm:
+
+```shell
+helm repo add dask https://helm.dask.org/    # add the Dask Helm chart repository
+helm repo update                             # get latest Helm charts
+helm install dask/dask                     # deploy standard Dask chart
+```
+
 
 
 
@@ -171,6 +262,22 @@ dask-worker [OPTIONS] [SCHEDULER] [PRELOAD_ARGV]...
 ```
 
 ### dask-ssh
+
+通过ssh启动一个dask集群。
+
+```shell
+dask-ssh [OPTIONS] [HOSTNAMES]... # hostnames的第一个是scheduler，后面的是worker
+# Optional
+--scheduler <scheduler> # 手动指定scheduler，默认是hostname第一个地址
+--scheduler-port <scheduler_port> # 指定scheduler端口，默认是8786
+--nthreads <nthreads> # 指定每个worker的线程数，默认为CPU核数除以每个主机的进程数
+--nprocs <nprocs> # 每个主机的worker数，默认为1
+--hostfile <hostfile> # 从文件中读入HOSTNAMES列表
+--ssh-username <ssh_username> # ssh用户名
+--ssh-port <ssh_port> # ssh端口
+--ssh-private-key <ssh_private_key> # ssh密钥
+--memory-limit <memory_limit> # worker的内存限制
+```
 
 
 

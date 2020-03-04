@@ -85,6 +85,7 @@ jupyter notebook # 启动一个notebook服务器
                  # --no-browser 创建完notebook服务器后不要用浏览器打开
                  # --port 指定端口
                  # --ip 指定监听的地址
+jupyter lab --generate-config # 生成配置文件
 ```
 
 
