@@ -207,6 +207,21 @@ jobqueue:
 
 当创建cluster时不显式指定参数时（如cluster = PBSCluster()），则会使用上述默认配置。如果把配置文件放在/etc/dask目录下，则会对所有用户生效。
 
+## slurm
+
+```shell
+from dask_jobqueue import SLURMCluster
+
+cluster = SLURMCluster(cores=12,
+                       processes=1,
+                       memory="100G",
+                       project="woodshole",
+                       walltime="01:00:00",
+                       queue="debug")
+                       
+# 每个进程的线程数 
+```
+
 
 
 # Kubernetes
@@ -279,6 +294,15 @@ dask-ssh [OPTIONS] [HOSTNAMES]... # hostnames的第一个是scheduler，后面�
 --memory-limit <memory_limit> # worker的内存限制
 ```
 
+### SLURMCluster
+
+常用方法：
+
+```shell
+cluster = SLURMCluster()
+cluster.scale(5) # 扩展worker节点到5
+```
+
 
 
 
@@ -310,6 +334,25 @@ scheduler_options: dict # 可选字段，设置传给scheduler的关键字，参
 ...     scheduler_options={"port": 0, "dashboard_address": ":8797"}
 ... )
 >>> client = Client(cluster)
+```
+
+
+
+### Array
+
+Dask数组使用阻塞算法实现NumPy ndarray接口的一个子集，把大的数组分割成许多小的数组。这使我们能够使用所有CPU核在大于内存的数组上进行计算。我们使用Dask图来协调这些被阻塞的算法。
+
+Dask数组协调许多排列成网格的NumPy数组。这些NumPy数组可能位于磁盘或其他机器上:
+
+![image-20200306145655821](image/image-20200306145655821.png)
+
+Dask Array应用于大气和海洋科学、大规模成像、基因组学、优化或统计的数值算法等领域。
+
+常用接口：
+
+```shell
+exp(x) # 返回e的x次方
+random.random([size]) # 产生区间为[0.0, 1.0)的随机浮点数
 ```
 
 

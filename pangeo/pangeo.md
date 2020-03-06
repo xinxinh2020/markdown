@@ -285,3 +285,20 @@ Spawners出来的是一个JupyterLab（阿里云上的Pangeo环境可以看到�
 
 
 
+# 额外安装的包
+
+```shell
+# python
+dask_jobqueue
+
+# linux
+sshd
+
+```
+
+
+
+
+
+
+
