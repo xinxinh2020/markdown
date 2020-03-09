@@ -97,13 +97,21 @@ Dataset不支持位置索引，因为Dataset中维度的顺序是不明确的。
 
 
 
+## 与Dask结合
+
+Dask把数组分成小片，称为chunk，每个chunk足够小，可以加载到内存中。和numpy不一样，操作在dask中是lazy的。操作映射成一系列块上的任务，排成队列，在实际要求计算值之前不执行任何计算。当要进行计算时，数据才加载进内存并进行计算。
+
+几乎所有现有的xarray方法(包括用于索引、计算、连接和分组操作的方法)都被扩展为自动使用Dask数组。当您在一个xarray数据结构中将数据作为一个Dask数组加载时，几乎所有的xarray操作都会将其作为一个Dask数组;当这是不可能的时候，它们将引发一个异常，而不是意外地将数据加载到内存中。
+
+如果要使用一个xarray不支持的函数，可以将dask数组从xarray中提取出来（.data）直接使用dask数组
+
 # Shell命令
 
 ```shell
 # import xarray as xr
 
 # 创建一个DataArray对象
-data = xr.DataArray(np.random.randn(2,3), dims=('x','y'), coords={'x':[10,20]})
+da = xr.DataArray(np.random.randn(2,3), dims=('x','y'), coords={'x':[10,20]})
 data.values # 返回一个numpy数组
 data.dims # 返回维度信息
 data.coords # 坐标轴信息
@@ -147,6 +155,14 @@ ds.set_coords(['temperature', 'precipitation'])
 ds['time'].to_index()
 # 每个维度对应的索引
 ds.indexes
+ds.nbytes # ds的大小
+rechunked = ds.chunk({'latitude': 100, 'longitude': 100}) # 把整个数据集切分成chunk
+rechunked.chunks # 查看数据集的chunk
+
+# 立刻将数据加载到内存中 
+ds.load()
+# 将数据加载到分布式内存中，并保存dask数组的格式
+ds.persist()
 
 
 # return : Dataset
