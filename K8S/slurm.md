@@ -73,21 +73,6 @@ export SLURMUSER=992
 groupadd -g $SLURMUSER slurm
 useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
 
-# 安装munge
-wget https://github.com/dun/munge/releases/download/munge-0.5.14/munge-0.5.14.tar.xz
-tar xJf munge-0.5.14.tar.xz
-cd munge-0.5.14
-./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run
-make
-# make check
-make install
-
-# 创建一个munge key，创建key的用户和运行munged进程的用户必须相同
-${sbindir}/mungekey --verbose  # 默认是/usr/sbin/mungekey，权限必须是600
-
-# 启动munge
-/etc/init.d/munge start
-# /etc/init.d/munge 停止服务
 
 
 # 直接用apt-get安装munge

@@ -2,6 +2,22 @@
 
 # Dask总结
 
+
+
+ ## 架构
+
+LocalCluster
+
+![image-20200306162646544](image/image-20200306162646544.png)
+
+Kubernetes
+
+![image-20200306162044909](image/image-20200306162044909.png)
+
+Slurm
+
+![image-20200306162253687](image/image-20200306162253687.png)
+
 ## Get Started
 
 dask's helloworld:
@@ -93,16 +109,10 @@ result.load() # 查看计算结果
 
 
 
- ## 架构
 
-LocalCluster
 
-![image-20200306162646544](image/image-20200306162646544.png)
+## 问题
 
-Kubernetes
+Dask（Pangeo）需要在slurm控制节点上跑？
 
-![image-20200306162044909](image/image-20200306162044909.png)
-
-Slurm
-
-![image-20200306162253687](image/image-20200306162253687.png)
+![image-20200309183956757](image/image-20200309183956757.png)
