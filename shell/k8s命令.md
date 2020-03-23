@@ -1,6 +1,6 @@
 [TOC]
 
-# K8S
+# K8S常用命令
 
 ```shell
 kubectl version # 查看kubectl版本
