@@ -6,6 +6,15 @@
 
 大写开头的名字是公有的
 
+可以使用govendor来管理依赖：
+
+```shell
+go get -u github.com/kardianos/govendor
+govendor init  # 配置好环境变量，在具体项目下执行
+govendor get github.com/gorilla/mux #  下载mux到公共的vendor目录下
+govendor add +external # 将依赖包加入到项目vendor目录
+```
+
 
 
 
