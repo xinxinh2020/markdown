@@ -10,7 +10,32 @@
 
 ## 日志规范
 
-给每个请求打上标记
+### 给每个请求打上标记
+
+请求之间常常夹杂很多其他请求的日志，区分哪些日志是属于这个请求的很麻烦，特别是在请求耗时比较的时候：
+
+```shell
+admin-kn2@kn2:/usr/local/work/nfs/starlight/logs$ cat user-2020-03.log | grep 4ba23d78-7503-4ecc-a3ea-0ce3e4c3d833 -A 10
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:08 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：4ba23d78-7503-4ecc-a3ea-0ce3e4c3d833，请求方法：GET，处理函数：GetSelfUser，来源IP：172.16.100.254，用户：cuiyingyan,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:25 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：bfc52c0d-2921-4514-b1ba-5414f6a63f68，请求方法：GET，处理函数：GetSelfUser，来源IP：223.74.55.201，用户：jnu_xhjiang_1,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:27 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：1d2ffeb7-e195-4ca3-bfd7-263e0fc18664，请求方法：GET，处理函数：GetSelfUser，来源IP：223.74.55.201，用户：jnu_xhjiang_1,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:30 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：1a4a11fb-02a5-4ff6-8a1b-0e922f35ea7c，请求方法：GET，处理函数：GetSelfUser，来源IP：172.16.100.254，用户：cuiyingyan,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:31 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：521f837b-0f57-4934-8d9b-73200bfda63d，请求方法：GET，处理函数：GetSelfUser，来源IP：223.74.55.201，用户：jnu_xhjiang_1,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:34 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user_verify/password_check，标识：5b144d80-f504-4fd0-8b49-9748ebd79187，请求方法：GET，处理函数：CheckUserBihuPasswordByName，来源IP：112.96.36.194，用户：nscc-gz_kangyouzhong,请求数据：
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:34 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/user_profile，标识：505ac9a5-cd47-4dec-910f-ac7040325865，请求方法：GET，处理函数：GetUserProfile，来源IP：112.96.36.194，用户：nscc-gz_kangyouzhong,请求数据：???
+INFO[26 Mar 20 09:22 CST] 2020/03/26 09:22:34 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：033fd2c6-af31-4449-916f-f777796b214d，请求方法：GET，处理函数：GetSelfUser，来源IP：172.16.100.254，用户：cuiyingyan,请求数据：
+INFO[26 Mar 20 09:23 CST] 2020/03/26 09:23:01 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/self，标识：213add29-4eff-4357-bd33-43949867b1a1，请求方法：GET，处理函数：GetSelfUser，来源IP：223.74.55.201，用户：jnu_xhjiang_1,请求数据：
+INFO[26 Mar 20 09:23 CST] 2020/03/26 09:23:03 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/user/user_profile，标识：adf38d3f-a8cb-40f2-bd9b-a7f883cea18c，请求方法：GET，处理函数：GetUserProfile，来源IP：172.16.100.254，用户：cuiyingyan,请求数据：???
+INFO[26 Mar 20 09:23 CST] 2020/03/26 09:23:03 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:322: 接收访问请求：/status，标识：d9f59481-34f5-4dfe-a651-ea33059ced19，请求方法：GET，处理函数：GetUserStatus，来源IP：172.16.100.254，用户：cuiyingyan,请求数据：???
+--
+INFO[26 Mar 20 09:23 CST] 2020/03/26 09:23:44 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:412: 响应访问请求：/user/self，标识：4ba23d78-7503-4ecc-a3ea-0ce3e4c3d833，请求方法：GET，处理函数：GetSelfUser，来源IP：172.16.100.254，用户：cuiyingyan，请求数据：，请求结果：{{4ba23d78-7503-4ecc-a3ea-0ce3e4c3d833 1110 处理超时，请联系管理员进行处理  0} <nil>}，耗时：96.372563s，错误信息：
+已过截止时间
+error stack:
+starlight/common/metric.Process /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:514
+starlight/user.ms/api.GetSelfUser /var/jenkins_home/workspace/pro/src/starlight/user.ms/api/query.go:56
+```
+
+
 
 用户名为???
 
