@@ -14,7 +14,7 @@
 GET /
 GET /_cat/indices # 查看有哪些索引
 
-# 创建一个indice
+# 创建一个indice(自动推断索引结构各个字段的类型)
 POST twitter/_doc/1
 {
   "user":"GB",
@@ -24,7 +24,13 @@ POST twitter/_doc/1
   "country":"China"
 }
 
-# 查询记录
+# 显示定义索引结构
+PUT twitter/_mapping
+
+# 查询某个索引所有记录
+GET twitter/_search
+
+# 指定id查询记录
 GET twitter/_doc/1
 
 # 更新记录
@@ -41,6 +47,14 @@ PUT twitter/_doc/1
   }
 }
 
+# 删除索引
+DELETE twitter
+
+# 查看索引结构
+GET twitter/_mapping # type:"text" 表示该字段可以用于全文索引
+										 # keyword 表示可以用于聚合查询
+										 # geo_point 表示地理信息
+										 
 
 ```
 
