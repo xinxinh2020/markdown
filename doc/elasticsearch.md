@@ -6,63 +6,29 @@
 
 它可以用于许多目的，但它的一个优势是索引半结构化数据流，例如日志或解码的网络数据包
 
-### 命令示例
+ES中的数据以JSON格式保存
 
-在Kibana的console上执行
+Index相当于数据库的表，document相当于记录，field相当于字段（键值对形式）
 
-```shell
-GET /
-GET /_cat/indices # 查看有哪些索引
+ES中一个index存放在多个物理分片（shard）中，每个物理分片会存放一部分document，不同的物理分片可能位于不同的节点上，即提供了容错，也提供了搜索效率。分片分为主分片和备份分片，主分片的数量在某个时间点是固定的，备份分片则是主分片的拷贝。主分片的大小和数量是需要 权衡的，分片数越多，维护的开销就越大，而分片的大小越大，在自动迁移时就需要花更多的时间。一般，分片的平均大小保持在几G和几十G之间。数量一般1G空间少于20G
 
-# 创建一个indice(自动推断索引结构各个字段的类型)
-POST twitter/_doc/1
-{
-  "user":"GB",
-  "uid":1,
-  "city":"Beijing",
-  "province":"Beijing",
-  "country":"China"
-}
+ES会索引每个字段，并且每个字段都有一个优化的数据类型（text，numeric，geo）
 
-# 显示定义索引结构
-PUT twitter/_mapping
+ES会自动推断数据类型，但如果你对你的数据很了解的话，显式指定数据类型更好（mapping），另外，地理位置信息无法被自动推断出来
 
-# 查询某个索引所有记录
-GET twitter/_search
+text类型用于全文搜索，keyword类型用于排序和聚合
 
-# 指定id查询记录
-GET twitter/_doc/1
+ES支持结构化查询和全文搜索，以及两者的混合。结构化查询类似于SQL。全文搜索返回的记录是按相关度排序的。
 
-# 更新记录
-PUT twitter/_doc/1
-{
-  "user":"GB",
-  "uid":1,
-  "city":"Beijing",
-  "province":"Beijing",
-  "country":"China",
-  "location":{
-    "lat":"29.8",
-    "lon":"111.3"
-  }
-}
+聚合查询利用的是结构化数据，所以很快
 
-# 删除索引
-DELETE twitter
+CCR（Cross-Cluster Replication）可以自动将indices从主集群同步到另外的集群，这些集群可以在不同的数据中心，可以提高容错性，也可以提高就近访问的读请求
 
-# 查看索引结构
-GET twitter/_mapping # type:"text" 表示该字段可以用于全文索引
-										 # keyword 表示可以用于聚合查询
-										 # geo_point 表示地理信息
-										 
-
-```
-
-
-
-
+bulk可以执行批量操作，性能比一个一个执行效果好，最佳的数量为1000-5000条document以及5MB到15MB之间的负载
 
 ## Kibana
 
 建议和Elasticsearch安装在一起，这样kibana启动时就会自动连接ES
+
+Index Patterns通过通配符的方式匹配多个ES，*表示通配，逗号用于连接多个名字，-表示不包含
 
