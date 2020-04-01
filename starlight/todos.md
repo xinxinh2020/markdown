@@ -50,7 +50,7 @@ INFO[23 Mar 20 18:06 CST] 2020/03/23 18:06:49 /var/jenkins_home/workspace/pro/sr
 INFO[23 Mar 20 18:06 CST] 2020/03/23 18:06:49 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:382: 响应访问请求：/app?page=1&limit=24&order_by=id&field_eq_app__published=1，标识：08c973d3-73d8-4dc3-ab37-8fdd77672c6f，请求方法：GET，处理函数：GetApps，来源IP：61.152.133.242，用户：huaqin_llfan_1，请求数据：，请求结果：{{08c973d3-73d8-4dc3-ab37-8fdd77672c6f 0 no valid transaction  0} <nil>}，耗时：0.001721s，错误信息：
 ```
 
-
+2020/04/01 09:14:20 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:425: 响应访问请求：/state?file=%2FGPUFS%2Fapp%2Fbihu%2Fspooler%2Fwdeb6a6b7-4bc6-4e16-a6fd-85a1b6c55956，标识：c1e79958-8257-4161-99ba-5ba8ac81cabc，请求方法：GET，处理函数：GetFileState，来源IP：172.16.27.3，用户：cn_envision_sf_1，请求数据：???，请求结果：{{c1e79958-8257-4161-99ba-5ba8ac81cabc 11502 stat /GPUFS/app/bihu/spooler/wdeb6a6b7-4bc6-4e16-a6fd-85a1b6c55956: no such file or directory : /GPUFS/app/bihu/spooler/wdeb6a6b7-4bc6-4e16-a6fd-85a1b6c55956  0} <nil>}，耗时：0.001579s，错误信息： stat /GPUFS/app/bihu/spooler/wdeb6a6b7-4bc6-4e16-a6fd-85a1b6c55956: no such file or directory : /GPUFS/app/bihu/spooler/wdeb6a6b7-4bc6-4e16-a6fd-85a1b6c55956 error stack: starlight/storage.ms/api.GetFileState.func1 /var/jenkins_home/workspace/pro/src/starlight/storage.ms/api/storage_la.go:630 starlight/common/metric.Process.func2 /var/jenkins_home/workspace/pro/src/starlight/common/metric/metric.go:522
 
 ### 可优化的日志
 
