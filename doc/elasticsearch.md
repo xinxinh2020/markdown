@@ -1,8 +1,6 @@
+[TOC]
 
-
-
-
-## ES
+## Elasticsearch
 
 它可以用于许多目的，但它的一个优势是索引半结构化数据流，例如日志或解码的网络数据包
 
@@ -25,6 +23,27 @@ ES支持结构化查询和全文搜索，以及两者的混合。结构化查询
 CCR（Cross-Cluster Replication）可以自动将indices从主集群同步到另外的集群，这些集群可以在不同的数据中心，可以提高容错性，也可以提高就近访问的读请求
 
 bulk可以执行批量操作，性能比一个一个执行效果好，最佳的数量为1000-5000条document以及5MB到15MB之间的负载
+
+
+
+### Query DSL
+
+Query DSL：Domain Specific Language，基于JSON来定义查询。
+
+将查询DSL看作查询的AST(Abstract Syntax Tree，抽象语法树)，包含了两种类型的子句：
+
+- Leaf query clauses(叶查询子句): 叶查询子句在特定字段中查找特定值，比如match，term或range查询。这些子句可以单独使用
+- Compound query clauses(复合查询子句)：复合查询子句复合了其他叶查询子句或复合查询子句，以逻辑（bool,dis_max）的方式结合多个查询
+
+#### Query Context
+
+ Query Context用于回答“一个文档(document)和这个查询子句有多匹配？”，也就是，它除了判断一个文档是否匹配之外，还计算了它的匹配程度，保存在_score这个字段中
+
+#### Filter context
+
+在Filter context中，一个查询子句回答类似“这个文档匹配吗”的问题，回答为是或否。不计算匹配程度，Filter context一般用于过滤结构化数据。
+
+总结：在应该影响匹配分数的情况下使用query context，其他情况下使用filter。
 
 ## Kibana
 

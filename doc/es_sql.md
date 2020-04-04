@@ -11,7 +11,7 @@ GET / # 查看ES信息
 GET /_cat/indices?v # 查看有哪些索引,后面的v表示可以看到indice上面显示的 
 # 显式定义索引结构
 PUT twitter/_mapping
-{xxx}
+{}
 
 # 显式定义索引结构
 PUT /shakespeare
