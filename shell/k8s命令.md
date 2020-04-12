@@ -52,6 +52,9 @@ kubeadm join # 将一个node加入集群中
 			# --control-plane : 作为master加入
 kubeadm init phase upload-certs --upload-certs # 重新生成并上传证书
 										   # 密码和解密密钥将在两小时后过期
+				
+kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f - # 重启pod
+
 ```
 
 
