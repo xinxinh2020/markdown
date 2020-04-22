@@ -4,9 +4,11 @@
 
 ## 接口规范
 
-### 返回错误码为0
+SendTelephoneResetCode/SendEmailResetCode...重复度太高了
 
-错误码为0是因为业务接口返回的error类型不是
+generateTokenByName里面通过用户名查找用户的操作可以抽象出来
+
+
 
 ## 日志规范
 
