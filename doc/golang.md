@@ -53,6 +53,34 @@ slice底层包括了起始地址，len和cap
 
 结构体之间进行类型转换时，要求两个结构体的字段要完全相同（包括字段名）
 
+结构体实现String()方法的作用和Java的toString()类似，但在Println()中要传指针
+
+对于方法而言，接受者为值类型或指针类型，都可以同时支持用值类型和指针类型的变量进行调用，实际使用的是值类型还是指针类型取决于方法声明，而不是调用
+
+golang的结构体没有构造方法，可以用工厂模式实现类似构造方法的东西（也可以用单例模式）
+
+结构体继承了其他结构体时，变量的访问采用就近访问，当父子结构体都定义了同一个字段时，或者多重继承的两个父类都有相同字段时，就需要显式指定使用哪个父类的字段
+
+继承解决的主要问题是代码的复用性和可维护性，接口的价值在于设计好各种规范（方法）
+
+golang中多态是通过接口来实现的,有两种形式：多态参数和多态数组
+
+将接口转换成具体类的时候失败会报panic,可以使用类型断言用ok来接收类型转换是否成功，这样就不会报panic了
+
+x.(type)可以得到x的实际类型
+
+单元测试的名称需要以_test.go结尾，前缀无所谓，方法名需要是TestXxx()，Xxx也可以随意
+
+协程的特点：有独立的栈空间；共享堆空间；由用户调度；可以看作轻量级的线程
+
+golang可以很轻松开启上万个协程
+
+通过runtime.NumCPU可以得到机器的逻辑cpu个数，通过GOMAXPROCS()可以设置使用的cpu个数
+
+常量名并没有要求全大写的规范
+
+
+
 ### Printf的格式
 
 ```shell
@@ -71,6 +99,38 @@ slice底层包括了起始地址，len和cap
 基本数字类型转string：fmt.Sprintf()或者用strconv,如strconv.Itoa()
 
 string转基本数据类型：strconv.ParseXXX()
+
+
+
+### 管道
+
+channel的本质是个队列，队列的容量是固定的，不能动态增长。管道是线程安全的，并且是有类型的。
+
+可以用for range遍历管道，但遍历时，管道必须时已关闭的，否则会报错。更见的场景上使用select来遍历channel的数据
+
+如果一个管道只有写没有读，运行时会报错。如果读写的频率不一样，不会有问题。
+
+select用来监听和channel有关的io操作，如果没有default分支，select语句会一直阻塞，直到有一个case上的io操作可以进行
+
+
+
+### 反射
+
+#### Type
+
+reflect.TypeOf()可以得到对象的类型（reflect.Type）
+
+Type可以拿到类型的Kind(struct,int等，特别的，指针的类型为ptr),Name(类型名，如Student等)
+
+#### Value
+
+reflect.ValueOf()可以得到对象的值（reflect.Value）
+
+Value可以拿到的对象各个字段的值，调用对象的方法等，调用对象的具体类型（Type）
+
+Value的Int(),Float(),Bool()方法可以拿到对应类型的对象的值，但必须保证该对象的类型是正确的，否则会报panic
+
+Value的Elem()可以返回指针指向的值对应的Value，拿到该Value之后再调用SetInt(),SetXxx()方法可以修改它的值，修改结果会影响到外面，即调用ValueOf传进来的指针指向的数据
 
 
 
@@ -132,6 +192,13 @@ cap()
 append() # 给切片追加元素
 copy(slice1,slice2) # 拷贝切片，把slice2拷贝给slice1
 delete(map1,"key1") # 删除map中指定key的元素，如果key不存在，则不做任何操作，也不会报错
+close() # 关闭管道，关闭后不能再写数据(会报错)，但可以读之前写入的数据，当之前写入的数据被取完后继续取的时候，不会报错，但是x,ok := <-chan中的ok会是false
+```
+
+### 文件操作
+
+```shell
+os.File # 封装了所有对文件的操作
 ```
 
 
@@ -140,6 +207,7 @@ delete(map1,"key1") # 删除map中指定key的元素，如果key不存在，则�
 
 ```shell
 sort.Ints() # 给int切片按递增排序
+sort.Sort(data Interface) #
 ```
 
 
