@@ -26,18 +26,18 @@ gorm.Model结构体，包括字段ID，CreatedAt，UpdatedAt，DeletedAt，可�
 
 ## 使用示例
 
-```shell
-# 连接mysql数据库
+```go
+// 连接mysql数据库
 db, err := gorm.Open("mysql", "root:password@tcp(localhost:3306)/mydb?charset=utf8&parseTime=True&loc=Local")
 
-# 禁用表名复数，默认表名是结构体名称的复数形式
+// 禁用表名复数，默认表名是结构体名称的复数形式
 db.SingularTable(true)
 
-# 检查表是否存在
+// 检查表是否存在
 db.HasTable("users")
-db.HasTable(&User{}) # 推断表名
+db.HasTable(&User{}) // 推断表名
 
-# 创建表，可以通过该gorm标签设置字段属性和约束
+// 创建表，可以通过该gorm标签设置字段属性和约束
 type User struct {
     UserId int  `gorm:"primary_key"`
     Phone string
@@ -51,29 +51,72 @@ type User struct {
 }
 db.CreateTable(&User{})
 
-# 删除表
+// 删除表
 db.DropTable(&User{})
 db.DropTable("user")
 db.DropTableIfExists("user")
 
-# 删除列
+// 删除列
 db.Model(&User{}).DropColumn("src")
 
-# 关联查询
-db.Model(&user).Related(&profile, "Profile") # SELECT * FROM profiles WHERE id = 111; // 111是user的外键ProfileID,如果字段名字和变量类型名(Profile)相同的话，后面的Profile可以省略
-db.Model(&user).Related(&emails) # SELECT * FROM emails WHERE user_id = 111; 查询user对应的Email切片的值
+// 关联查询
+db.Model(&user).Related(&profile, "Profile") // SELECT * FROM profiles WHERE id = 111; // 111是user的外键ProfileID,如果字段名字和变量类型名(Profile)相同的话，后面的Profile可以省略
+db.Model(&user).Related(&emails) // SELECT * FROM emails WHERE user_id = 111; 查询user对应的Email切片的值
 
 
-db.NewRecord(&user) # 判断User的主键是否为空（是的话可以安全地插进数据库，不是的话也可以插入数据库，但可能会出现主键冲突的错误）
-db.Create(&user) # 插入一条记录
+db.NewRecord(&user) // 判断User的主键是否为空（是的话可以安全地插进数据库，不是的话也可以插入数据库，但可能会出现主键冲突的错误）
+db.Create(&user) // 插入一条记录
 
-# 查询
-db.First(&user) # SELECT * FROM users ORDER BY id LIMIT 1; 获取第一条记录
-db.Last(&user)  # SELECT * FROM users ORDER BY id DESC LIMIT 1; 获取最后一条记录
-db.Find(&users) # SELECT * FROM users; 获取所有记录
-db.First(&user, 10) # SELECT * FROM users WHERE id = 10; 使用主键获取记录
-db.Where("name = ?", "jinzhu").First(&user) # SELECT * FROM users WHERE name = 'jinzhu' limit 1;
-db.Where("name = ?", "jinzhu").Find(&users) # SELECT * FROM users WHERE name = 'jinzhu'; 注意这里的users要传切片的地址，切片需要先分配内存，大小随意，只要分了就行
+// 查询
+db.First(&user) // SELECT * FROM users ORDER BY id LIMIT 1; 获取第一条记录，按主键排序
+db.Last(&user)  // SELECT * FROM users ORDER BY id DESC LIMIT 1; 获取最后一条记录
+db.Find(&users) // SELECT * FROM users; 获取所有记录
+db.First(&user, 10) // SELECT * FROM users WHERE id = 10; 使用主键获取记录
+db.Where("name = ?", "jinzhu").First(&user) // SELECT * FROM users WHERE name = 'jinzhu' limit 1;
+db.Where("name = ?", "jinzhu").Find(&users) // SELECT * FROM users WHERE name = 'jinzhu'; 获取所有匹配记录。注意这里的users要传切片的地址，切片需要先分配内存，大小随意，只要分了就行
+db.Where("name <> ?", "jinzhu").Find(&users) // 不等于？？？
+
+
+// IN
+db.Where("name in (?)", []string{"jinzhu", "jinzhu 2"}).Find(&users)
+// LIKE
+db.Where("name LIKE ?", "%jin%").Find(&users)
+// AND
+db.Where("name = ? AND age >= ?", "jinzhu", "22").Find(&users)
+// Time
+db.Where("updated_at > ?", lastWeek).Find(&users)
+db.Where("created_at BETWEEN ? AND ?", lastWeek, today).Find(&users)
+
+// Struct，只查询有值的字段
+db.Where(&User{Name: "jinzhu", Age: 20}).First(&user)
+//// SELECT * FROM users WHERE name = "jinzhu" AND age = 20 LIMIT 1;
+
+// Map
+db.Where(map[string]interface{}{"name": "jinzhu", "age": 20}).Find(&users)
+//// SELECT * FROM users WHERE name = "jinzhu" AND age = 20;
+
+// 主键的Slice
+db.Where([]int64{20, 21, 22}).Find(&users)
+//// SELECT * FROM users WHERE id IN (20, 21, 22);
+
+//not
+db.Not("name", "jinzhu").First(&user)
+//// SELECT * FROM users WHERE name <> "jinzhu" LIMIT 1;
+
+// Not In
+db.Not("name", []string{"jinzhu", "jinzhu 2"}).Find(&users)
+//// SELECT * FROM users WHERE name NOT IN ("jinzhu", "jinzhu 2");
+
+// Not In slice of primary keys
+db.Not([]int64{1,2,3}).First(&user)
+//// SELECT * FROM users WHERE id NOT IN (1,2,3);
+
+db.Not("name = ?", "jinzhu").First(&user)
+//// SELECT * FROM users WHERE NOT(name = "jinzhu");
+
+// Struct
+db.Not(User{Name: "jinzhu"}).First(&user)
+//// SELECT * FROM users WHERE name <> "jinzhu";
 ```
 
 
@@ -81,7 +124,7 @@ db.Where("name = ?", "jinzhu").Find(&users) # SELECT * FROM users WHERE name = '
 ## 扩展方法
 
 ```shell
-func (u User) TableName() string # 为User设置对应的表名
+func (u User) TableName() string // 为User设置对应的表名
 
 ```
 
@@ -90,7 +133,7 @@ func (u User) TableName() string # 为User设置对应的表名
 ## 标签
 
 ```shell
-default # 似乎可以设置字段的默认值（未测试成功）
-func (user *User) BeforeCreate(scope *gorm.Scope) error # 调Create方法之前的回调，可以在这里显式设置主键
+default // 似乎可以设置字段的默认值（未测试成功）
+func (user *User) BeforeCreate(scope *gorm.Scope) error // 调Create方法之前的回调，可以在这里显式设置主键
 ```
 
