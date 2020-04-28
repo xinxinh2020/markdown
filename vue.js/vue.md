@@ -46,6 +46,54 @@
 
 
 
+## 指令
+
+### v-html
+
+### v-bind
+
+用于设置HTML元素的属性：
+
+```html
+<!-- use是个变量 -->
+<div v-bind:class="{'class1': use}"></div>
+```
+
+
+
+## 捕获元素
+
+通过Vue对象的el匹配html的div：
+
+```javascript
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#vue_det',
+			data: {
+				site: "菜鸟教程",
+				url: "www.runoob.com",
+				alexa: "10000"
+			},
+			methods: {
+				details: function() {
+					return  this.site + " - 学的不仅是技术，更是梦想！";
+				}
+			}
+		})
+	</script>
+```
+
+
+
+#### id
+
+```shell
+<div id="vue_det">
+el: '#vue_det'
+```
+
+
+
 ## 前端基础
 
 ### class属性
