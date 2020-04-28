@@ -37,6 +37,7 @@ kubectl delete service kubernetes-bootcamp # 删除service
 kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2 # 修改image镜像
 kubectl rollout status deployments/kubernetes-bootcamp # 查看版本更新进度
 kubectl label pod $POD_NAME app=v1 # 给pod加上一个标签:app=v1
+kubectl label nodes ln27 type=elastic # 给node打上一个标签
 kubectl logs $POD_NAME # 应用打印到标准输出的信息可以用logs操作查到
 kubectl exec $POD_NAME pwd # 直接在容器里执行命令，在只有一个容器的时候，可以省略容器的名字
 kubectl exec -ti $POD_NAME bash # 进入到容器里面
@@ -54,6 +55,7 @@ kubeadm init phase upload-certs --upload-certs # 重新生成并上传证书
 										   # 密码和解密密钥将在两小时后过期
 				
 kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f - # 重启pod
+kubectl cp 1.txt mysql-5fb6c74b86-xg97j:/1.txt # 拷贝文件
 
 ```
 
