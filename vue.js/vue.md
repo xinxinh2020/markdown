@@ -46,9 +46,21 @@
 
 
 
-## 指令
+## Vue对象的属性
 
-### v-html
+
+
+### methods
+
+### computed
+
+computed只有相关依赖发生改变时才会重新取值。而使用 methods ，在重新渲染的时候，函数总会重新调用执行。
+
+使用 computed 性能会更好，但是如果你不希望缓存，你可以使用 methods 属性。
+
+
+
+## 指令
 
 ### v-bind
 
@@ -57,6 +69,106 @@
 ```html
 <!-- use是个变量 -->
 <div v-bind:class="{'class1': use}"></div>
+
+<!-- 可以缩写 -->
+<a :href="url"></a>
+```
+
+如下，href 是参数，告知 v-bind 指令将该元素的 href 属性与表达式 url 的值绑定
+
+```html
+<div id="app">
+    <pre><a v-bind:href="url">菜鸟教程</a></pre>
+</div>
+    
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    url: 'http://www.runoob.com'
+  }
+})
+</script>
+```
+
+
+
+#### v-on
+
+用于监听DOM事件：
+
+```html
+<a v-on:click="doSomething">
+  
+<!-- 缩写 -->
+<a @click="doSomething"></a>
+```
+
+这里的click也是参数，设置指定的监听事件
+
+
+
+### v-html
+
+#### v-model
+
+可以实现双向的数据绑定：
+
+```html
+<div id="app">
+    <p>{{ message }}</p>
+    <input v-model="message">
+</div>
+    
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    message: 'Runoob!'
+  }
+})
+</script>
+```
+
+
+
+#### v-show
+
+根据条件展示元素：
+
+```html
+<h1 v-show="ok">Hello!</h1>
+```
+
+类似于v-if的作用。
+
+
+
+#### v-for
+
+需要以 **site in sites** 形式的特殊语法， sites 是源数据数组并且 site 是数组元素迭代的别名:
+
+```html
+<div id="app">
+  <ol>
+    <li v-for="site in sites">
+      {{ site.name }}
+    </li>
+  </ol>
+</div>
+ 
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    sites: [
+      { name: 'Runoob' },
+      { name: 'Google' },
+      { name: 'Taobao' }
+    ]
+  }
+})
+</script>
 ```
 
 
