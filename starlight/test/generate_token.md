@@ -25,9 +25,13 @@ POST参数：
 
 user_name可以是系统用户名，手机号或邮箱，但必须确保该用户绑定了邮箱，否则会发送手机验证码而不是邮箱验证码。
 
-key是固定的口令，仅提供给允许调用该接口的用户，如系统部。
+key是固定的口令，当提供该口令时，直接返回验证码给用户，该口令仅提供给特定用户，如系统部。不提供该口令不会返回验证码信息。
+
+以下，使用该key进行调用的用户成为内部用户，否则成为普通用户。
 
 #### 第一次调用
+
+内部用户调用：
 
 ```shell
 {
@@ -47,7 +51,28 @@ key是固定的口令，仅提供给允许调用该接口的用户，如系统�
 
 此时actually_send的值为true，用户的邮箱应收到一封邮件。
 
+普通用户调用：
+
+```shell
+{
+	"uuid": "780aafc7-ffd1-4d78-8e50-a9eb6b4369a2",
+	"code": 200,
+	"info": "",
+	"kind": "verification_code",
+	"total": 0,
+	"spec": {
+		"email": "****150377@email.szu.edu.cn",
+		"telephone": "",
+		"actually_send": true
+	}
+}
+```
+
+
+
 #### 3分钟内重复调用
+
+内部用户调用：
 
 ```shell
 {
@@ -67,11 +92,28 @@ key是固定的口令，仅提供给允许调用该接口的用户，如系统�
 
 此时actually_send的值为false，返回的是上一次发送的验证码，不会再次向用户的邮箱发送邮件。
 
+普通用户调用：
+
+```shell
+{
+	"uuid": "8739fa47-edc4-477d-934d-27a8a2f5fd44",
+	"code": 200,
+	"info": "",
+	"kind": "verification_code",
+	"total": 0,
+	"spec": {
+		"email": "****150377@email.szu.edu.cn",
+		"telephone": "",
+		"actually_send": false
+	}
+}
+```
+
 
 
 #### 1分钟内调用超过1000次报错
 
-该阈值比较难以达到，可不测。反过来可以测试调用几十次会不会报错，该接口是允许较为频繁地调用的，如果出错则有问题
+该阈值比较难以达到，可不测。反过来可以测试调用几十次会不会报错，该接口是允许较为频繁地调用的，如果出错则有问题。 todo: 对普通用户设置调用频率限制
 
 #### 3分钟后再次调用
 
@@ -219,22 +261,124 @@ localhost:8000/short_term_token/name
 2. 使用密码登录失败尝试次数过多的（大于5次）
 4. 距离上次登录成功时间过久的（大于7天）
 
+
+
+### 内部账号不需要验证
+
+使用user
+
 ### 第一次使用密码登录
 
-第一次登录的时候，肯定是需要进行二次验证的，直接使用密码登录会提醒用户改用二次验证登录：
+ 第一次登录的时候，为了兼容现有用户的使用习惯，允许用户直接使用密码进行登录：
+
+```shell
+
+```
+
+其中，kind等于verification_code表示用户需要二次验证（否则为token），spec用于提示前端告诉用户是通过手机还是通过邮箱发送验证码，true表示发送手机验证码，false表示发送邮件验证码
+
+### 1分钟内调用超过20次报错
 
 ```shell
 {
-    "uuid": "38e92b24-85b0-47c5-97c1-1c4e00a97bb4",
+    "uuid": "1472ad63-2869-402e-9b66-0ac02d7b1c65",
+    "code": 1111,
+    "info": "您使用的IP地址在单位时间内调用api接口的次数已达到上限",
+    "kind": "",
+    "total": 0,
+    "spec": null
+}
+```
+
+### 密码错误次数过多
+
+故意把密码输错5次，此时会被系统要求进行二次验证：
+
+```shell
+{
+    "uuid": "57a16ce4-815e-4d21-abca-dcaaa42d30df",
     "code": 200,
-    "info": "请使用验证码进行登录",
+    "info": "您的账号密码输入错误次数过多，请使用验证码登录",
     "kind": "verification_code",
     "total": 1,
     "spec": false
 }
 ```
 
-其中，kind等于verification_code表示用户需要二次验证（否则为token），spec用于提示前端告诉用户是通过手机还是通过邮箱发送验证码，true表示发送手机验证码，false表示发送邮件验证码
+使用验证码登录成功后再使用密码登录，又能正常登录
+
+```shell
+{
+    "uuid": "fe518020-3b95-434d-9d5b-43123ff94cc5",
+    "code": 200,
+    "info": "",
+    "kind": "token",
+    "total": 1,
+    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMyMTE3fQ.IHdL6CIiLq7ozLkfPXGsxvlZ6lgJ5YsLnMYUxTGT5Z3BuzY7nM3c6YT1Whwjix5vg6JXzIyLCZ4_xmKqoeZ6KA"
+}
+```
+
+
+
+### 不在常用网段登录
+
+可以在POSTMAN的请求头里修改X-Real-IP的地址，触发该场景。改变网段(24位网段)会被系统要求进行二次验证：
+
+```shell
+{
+	"uuid": "fe0a434a-5d3e-4cc8-a56e-140284569dcd",
+	"code": 200,
+	"info": "检测到您登录的网段发生变化，请使用验证码登录",
+	"kind": "verification_code",
+	"total": 1,
+	"spec": false
+}
+```
+
+使用新网段进行二次验证后再使用密码登录，此时应该能在新网段通过密码登录：
+
+```shell
+{
+    "uuid": "5201e662-a901-4873-8612-27b4b0e140ba",
+    "code": 200,
+    "info": "",
+    "kind": "token",
+    "total": 1,
+    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMwNjYyfQ.b_-MZQH-oFcp6AajN4Hk-69nSYfoaqNVgq_4hlJPtbgH9py2Zq5wy5YSnhkXQDnVxMMuDKhi8NdJXDohVa3Giw"
+}
+```
+
+二次验证登录成功后，该网段会被记录到最近登录网段中，使用该网段的不同IP地址都不需要二次验证。最多会记录两个网段。
+
+
+
+#### 一周未登录需要进行二次验证
+
+修改login_security_enhancement表的last_login字段，把时间改为一周前，此时系统应该要求用户进行二次验证：
+
+```shell
+{
+    "uuid": "abe8669d-d257-4c72-b5fe-f254dae2214e",
+    "code": 200,
+    "info": "您已经超过7天没登录系统，请使用验证码登录",
+    "kind": "verification_code",
+    "total": 1,
+    "spec": false
+}
+```
+
+使用二次验证登录成功后，在使用密码登录能够正常登录：
+
+```shell
+{
+    "uuid": "9a9ba2ec-c9dc-4cc1-87f7-8d738fd7e223",
+    "code": 200,
+    "info": "",
+    "kind": "token",
+    "total": 1,
+    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMyMzUzfQ.HOyBoReLfMvqcB6IOpY2Fe97NMOA6LEBbvOyFyKA8r_uVPxHSu0OluoIz-gkbVqeXH6bsXS9X-8470gUw4SWMg"
+}
+```
 
 
 
@@ -284,19 +428,6 @@ verification_code填入邮件收到的验证码。
 ```
 
 
-
-##### 1分钟内调用超过20次报错
-
-```shell
-{
-    "uuid": "1472ad63-2869-402e-9b66-0ac02d7b1c65",
-    "code": 1111,
-    "info": "您使用的IP地址在单位时间内调用api接口的次数已达到上限",
-    "kind": "",
-    "total": 0,
-    "spec": null
-}
-```
 
 
 
@@ -433,102 +564,6 @@ verification_code填入手机收到的验证码。
     "kind": "token",
     "total": 1,
     "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDI5OTM0fQ.c3kLWWRLAuAlX3Do4f2JXw66CU1O3G4NoDFcx86hgRF58HAmXPFgYJK_wi0As1X-5epn5ggDQ6Z6V8tE1-sSRw"
-}
-```
-
-
-
-#### 1分钟内密码错误次数过多
-
-Todo: 故意在1分钟内把密码输错5次，此时会被系统要求进行二次验证：
-
-```shell
-{
-    "uuid": "11c8b5e6-8a41-43ab-a474-bac0a058f8c4",
-    "code": 200,
-    "info": "您的账号密码输入错误次数过多，请使用验证码登录",
-    "kind": "verification_code",
-    "total": 1,
-    "spec": false
-}
-```
-
-使用验证码登录成功后再使用密码登录，又能正常登录
-
-```shell
-{
-    "uuid": "fe518020-3b95-434d-9d5b-43123ff94cc5",
-    "code": 200,
-    "info": "",
-    "kind": "token",
-    "total": 1,
-    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMyMTE3fQ.IHdL6CIiLq7ozLkfPXGsxvlZ6lgJ5YsLnMYUxTGT5Z3BuzY7nM3c6YT1Whwjix5vg6JXzIyLCZ4_xmKqoeZ6KA"
-}
-```
-
-
-
-#### 累计密码失败次数
-
-只要不在1分钟内连续输错5次，1分钟密码失败次数会重置
-
-
-
-#### 换个网段登录需要二次验证
-
-可以在POSTMAN的请求头里修改X-Real-IP的地址，触发该场景。改变网段(24位网段)会被系统要求进行二次验证：
-
-```shell
-{
-    "uuid": "9cd8b28b-e61f-4c2c-9d4b-ce068794fb0b",
-    "code": 200,
-    "info": "检测到您登录的网段发生变化，请使用验证码登录",
-    "kind": "verification_code",
-    "total": 1,
-    "spec": false
-}
-```
-
-使用新网段进行二次验证后再使用密码登录，此时应该能在新网段通过密码登录：
-
-```shell
-{
-    "uuid": "5201e662-a901-4873-8612-27b4b0e140ba",
-    "code": 200,
-    "info": "",
-    "kind": "token",
-    "total": 1,
-    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMwNjYyfQ.b_-MZQH-oFcp6AajN4Hk-69nSYfoaqNVgq_4hlJPtbgH9py2Zq5wy5YSnhkXQDnVxMMuDKhi8NdJXDohVa3Giw"
-}
-```
-
-二次验证登录成功后，该网段会被记录到最近登录网段中，使用该网段的不同IP地址都不需要二次验证。最多会记录两个网段。
-
-#### 一周未登录需要进行二次验证
-
-修改login_security_enhancement表的last_login字段，把时间改为一周前，此时系统应该要求用户进行二次验证：
-
-```shell
-{
-    "uuid": "abe8669d-d257-4c72-b5fe-f254dae2214e",
-    "code": 200,
-    "info": "您已经超过7天没登录系统，请使用验证码登录",
-    "kind": "verification_code",
-    "total": 1,
-    "spec": false
-}
-```
-
-使用二次验证登录成功后，在使用密码登录能够正常登录：
-
-```shell
-{
-    "uuid": "9a9ba2ec-c9dc-4cc1-87f7-8d738fd7e223",
-    "code": 200,
-    "info": "",
-    "kind": "token",
-    "total": 1,
-    "spec": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjE2MjgsIm9yaV91c2VyX25hbWUiOiIiLCJ1c2VyX25hbWUiOiJzdGFybGlnaHQxXzEiLCJ1aWQiOjY3ODUsImdyb3VwX25hbWUiOiJzdGFybGlnaHQxIiwiZ3JvdXBfaWQiOjgzMTMsInN0YXR1cyI6NSwiZXhwIjoxNTg4MDMyMzUzfQ.HOyBoReLfMvqcB6IOpY2Fe97NMOA6LEBbvOyFyKA8r_uVPxHSu0OluoIz-gkbVqeXH6bsXS9X-8470gUw4SWMg"
 }
 ```
 
