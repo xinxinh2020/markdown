@@ -63,6 +63,35 @@ Vue.set(vm.items,index,newValue)
 - 是一个函数对象
 - resolve和reject用于处理异步请求成功和失败的情况
 
+常用方法：
+
+- all() : 并发处理多个异步任务，所有任务都完成后才返回
+- race() : 并发处理多个异步任务，只要有一个任务完成就返回
+
+### axios
+
+拦截器：
+
+```javascript
+// 拦截请求
+axios.interceptors.request.use(function(config){
+  return config
+}, function(err){
+  
+})
+
+// 拦截响应
+axios.interceptors.response.use(function(config){
+  return config
+}, function(err){
+  
+})
+```
+
+
+
+
+
 # Vue对象
 
 
@@ -104,6 +133,12 @@ Vue.set(vm.items,index,newValue)
 自定义局部过滤器，用的时候和linux的管道操作类似。
 
 ### components
+
+
+
+### router
+
+路由
 
 局部组件
 
