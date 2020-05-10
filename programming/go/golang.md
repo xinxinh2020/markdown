@@ -197,8 +197,13 @@ close() # 关闭管道，关闭后不能再写数据(会报错)，但可以读�
 
 ### 文件操作
 
-```shell
-os.File # 封装了所有对文件的操作
+```go
+os.File // 封装了所有对文件的操作
+
+ioutil.ReadDir(".")   // 返回当前文件夹下的所有文件和文件夹，返回一个os.FileInfo切片
+in, err := os.Open(fileName)  // 打开一个文件
+br := bufio.NewReader(in) // 创建一个输入流
+line, _, err := br.ReadLine()  // 读取一行
 ```
 
 
