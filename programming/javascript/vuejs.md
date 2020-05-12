@@ -61,7 +61,9 @@ Vue.set(vm.items,index,newValue)
 ### Promise
 
 - 是一个函数对象
-- resolve和reject用于处理异步请求成功和失败的情况
+- 在要求异步请求的执行顺序时，可以避免传统方法的回调地狱
+- 创建Promise对象时，需要传一个函数（function(resolve, reject )）给它，在函数里执行一些异步操作（如ajax请求），执行成功通过resolve返回结果，失败通过reject返回结果，该对象的then方法可以得到这些结果数据。catch方法可以得到reject数据（then方法也可以，但要写第二个callback来接收，这种方式不推荐）。
+- 一组then调用链只要在最后写一个catch就可以了，因为一旦有一个then调用失败，后面的then都不会执行，直接跳到catch中集中处理异常情况。可以在then中手动抛出一个错误（`throw new Error('error!')`）来终止调用链的执行。
 
 常用方法：
 
@@ -89,6 +91,8 @@ axios.interceptors.response.use(function(config){
 ```
 
 
+
+## 路由
 
 
 
