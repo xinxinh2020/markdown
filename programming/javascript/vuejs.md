@@ -102,79 +102,32 @@ axios.interceptors.response.use(function(config){
 
 ## 属性
 
-### el
-
-元素的挂载位置，可以是css选择器或者是dom元素
-
-### data
-
-模型数据，值是一个对象
-
-### methods
-
-值是一个对象，里面可以包含很多方法。方法里需要通过this来获取data中的数据，this指向vue对象。
-
-### directives
-
-局部自定义指令
 
 
+```shell
+el # 元素的挂载位置，可以是css选择器或者是dom元素
+data # 模型数据，值是一个对象
+methods # 值是一个对象，里面可以包含很多方法。方法里需要通过this来获取data中的数据，this指向vue对象
+computed # 计算属性，值是一个对象，对象里定义各种方法。方法中的数据是基于data中的数据进行计算的，当data中的数据变化时，方法的计算结果也会发生变化。计算属性相比起methods中定义的方法，计算属性是基于缓存的，计算结果会放在缓存里，多次调用计算属性的方法只会进行一次计算（如果data中的数据没有发生变化的话），而普通方法是没有使用缓存的
+watch # 侦听器，监听某个属性，当属性变化时，执行一些操作
+router # 路由
+directives # 局部指令
+filters # 局部过滤器，用的时候和linux的管道操作类似
+components # 局部组件
 
-### computed
-
-计算属性，值是一个对象，对象里定义各种方法。方法中的数据是基于data中的数据进行计算的，当data中的数据变化时，方法的计算结果也会发生变化。
-
-计算属性相比起methods中定义的方法，计算属性是基于缓存的，计算结果会放在缓存里，多次调用计算属性的方法只会进行一次计算（如果data中的数据没有发生变化的话），而普通方法是没有使用缓存的。
-
-
-
-### watch
-
-侦听器，监听某个属性，当属性变化时，执行一些操作
-
-### filters
-
-自定义局部过滤器，用的时候和linux的管道操作类似。
-
-### components
-
-
-
-### router
-
-路由
-
-局部组件
-
-### 生命周期相关属性
-
-#### 挂载
-
-##### beforeCreate
-
-##### created
-
-##### beforeMount
-
-##### mounted
-
-比较重要的一个环节，此时模板中的元素都已经加载了，可以往模板里填充数据
-
-#### 更新
-
-当data中的数据发生变化时会触发。
-
-##### beforeUpdate
-
-##### updated
-
-
-
-#### 销毁
-
-##### beforeDestroy
-
-##### destroyed
+## 生命周期
+## 挂载
+beforeCreate
+created
+beforeMount
+mounted # 比较重要的一个环节，此时模板中的元素都已经加载了，可以往模板里填充数据
+## 更新（当data中的数据发生变化时会触发）
+beforeUpdate
+updated
+## 销毁
+beforeDestroy
+destroyed
+```
 
 
 
@@ -187,7 +140,7 @@ axios.interceptors.response.use(function(config){
 
 # 指令
 
-## 数据绑定指令
+- 数据绑定指令：v-text/v-html/v-model
 
 ```html
 <div v-text='msg'></div>  <!-- 类似于差值表达式 -->
@@ -195,7 +148,7 @@ axios.interceptors.response.use(function(config){
 <div v-model='msg'></div>  <!-- 双向数据绑定 -->
 ```
 
-## v-on
+- v-on
 
 绑定事件。
 
@@ -233,9 +186,7 @@ Vue.config.keyCodes.f1 = 112
 
 多个修饰符可以连写
 
-
-
-## v-bind
+- v-bind
 
 绑定属性：
 
@@ -248,16 +199,16 @@ Vue.config.keyCodes.f1 = 112
 <div v-bind:class='[activeClass, errorClass]'>跳转</div>  <!-- 绑定样式-数组形式，activeClass和errorClass是data中的数据，值是对应的样式名 -->
 ```
 
-## 分支循环
-### v-if/v-else-if/v-else
+- 分支循环
+- v-if/v-else-if/v-else
 
 渲染满足条件的元素，不满足的不会渲染
 
-### v-show
+- v-show
 
 不管满不满足条件都会渲染元素，只是满足条件的会显示，不满足的不会显示（style='display:none'）,如果元素需要频繁切换显示/隐藏，用v-show性能会比较好，因为v-if执行的是增加/删除，开销会比较大
 
-### v-for
+- v-for
 
 有以下形式：
 
@@ -274,7 +225,7 @@ v-for可以和v-if结合使用。
 
 
 
-## 其他指令
+- 其他指令
 
 v-once：显示一次数据以后，不再具有数据响应功能，用于不需要修改的数据，可以提高性能
 

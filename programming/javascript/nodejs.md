@@ -32,19 +32,23 @@ npm config get registry # 验证配置是否成功
 npm init --yes # 初始化项目
 
 # 常用第三方库
-npm install nodemon # 使用该工具启动程序后修改代码会自动更新，无需再重启服务
-npm install apidoc  # 通过注解自动生成文档
-npm install nodemailer # 发送邮件
-npm install cheerio # 将HTML字符串转化为类dom,之后可以通过JQuery语法选中其中的元素，可以用于爬虫得到的网页数据解析
-npm install mongoose # mongoDB
-npm install request # 封装了HTTP请求
-npm install typescript # 增强版的javascript，使用强类型编译语法
+nodemon # 使用该工具启动程序后修改代码会自动更新，无需再重启服务
+apidoc  # 通过注解自动生成文档
+nodemailer # 发送邮件
+cheerio # 将HTML字符串转化为类dom,之后可以通过JQuery语法选中其中的元素，可以用于爬虫得到的网页数据解析
+mongoose # mongoDB
+request # 封装了HTTP请求
+typescript # 增强版的javascript，使用强类型编译语法
 
 ## express相关模块
 express # 用于提供服务器端API
 body-parser # 用于在express中解析post请求的body 
 express-session
 multer # 图片上传
+
+## vue相关
+vue
+vue-router
 
 ## 常用模块
 ws # websocket
