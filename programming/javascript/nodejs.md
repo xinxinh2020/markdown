@@ -41,12 +41,15 @@ npm install request # 封装了HTTP请求
 npm install typescript # 增强版的javascript，使用强类型编译语法
 
 ## express相关模块
-npm install express # 用于提供服务器端API
-npm install body-parser # 用于在express中解析post请求的body 
-npm install multer # 图片上传
+express # 用于提供服务器端API
+body-parser # 用于在express中解析post请求的body 
+express-session
+multer # 图片上传
 
 ## 常用模块
 ws # websocket
+socket.io # websocket
+jsonwebtoken # 生成token
 ```
 
 
