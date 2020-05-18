@@ -47,8 +47,9 @@ express-session
 multer # 图片上传
 
 ## vue相关
-vue
+vue # import Vue from 'vue'
 vue-router
+vuex # import Vuex from 'vuex'
 
 ## 常用模块
 ws # websocket

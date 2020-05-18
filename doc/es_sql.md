@@ -215,6 +215,37 @@ GET /bank/_search
 
 
 
+## Grok
+
+```shell
+# grok预定义匹配字段：https://www.jianshu.com/p/443f1ea7b640
+
+# 查询名字为test-log的pipeline信息
+GET _ingest/pipeline/test-log
+
+# 添加一个pipeline
+PUT _ingest/pipeline/demo
+{
+  "description" : "demo",
+  "processors" : [ 
+    {
+      "grok": {
+        "field": "msg",
+        "patterns": ["接收访问请求：%{NOTSPACE:url_path}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user},请求数据：", 
+        "响应访问请求：%{NOTSPACE:url_path}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user}，请求数据：%{GREEDYDATA:input}，请求结果：%{GREEDYDATA:output}，耗时：%{SECOND:duration}s，错误信息：\n%{MILTI_LINE_TEXT:err}",
+        "%{MILTI_LINE_TEXT:msg}"  # 匹配不到上述规则的日志直接打印出来，不做格式化(默认匹配，如果不写这个规则该日志就无法在kibana上显示)
+        ],
+        "pattern_definitions" : {   # 自定义字段
+          "MILTI_LINE_TEXT" : "(.*\n)*"
+      	}
+      }
+    }
+  ]
+}
+```
+
+
+
 ## 一些说明
 
 ### 请求结果
