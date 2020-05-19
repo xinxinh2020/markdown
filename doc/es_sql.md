@@ -171,6 +171,8 @@ GET /bank/_search
   }
 }
 
+# 查询集群的节点信息
+GET _cat/nodes?pretty
 
 ```
 
@@ -224,24 +226,23 @@ GET /bank/_search
 GET _ingest/pipeline/test-log
 
 # 添加一个pipeline
-PUT _ingest/pipeline/demo
+PUT _ingest/pipeline/starlight
 {
-  "description" : "demo",
+  "description" : "starlight",
   "processors" : [ 
     {
       "grok": {
         "field": "msg",
-        "patterns": ["接收访问请求：%{NOTSPACE:url_path}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user},请求数据：", 
-        "响应访问请求：%{NOTSPACE:url_path}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user}，请求数据：%{GREEDYDATA:input}，请求结果：%{GREEDYDATA:output}，耗时：%{SECOND:duration}s，错误信息：\n%{MILTI_LINE_TEXT:err}",
-        "%{MILTI_LINE_TEXT:msg}"  # 匹配不到上述规则的日志直接打印出来，不做格式化(默认匹配，如果不写这个规则该日志就无法在kibana上显示)
+        "patterns": ["接收访问请求：%{NOTSPACE:uri}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func_name}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user_name},请求数据：","响应访问请求：%{NOTSPACE:uri}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func_name}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user_name}，请求数据：%{GREEDYDATA:input}，请求结果：{{%{NOTSPACE} %{NOTSPACE:code}  %{NOTSPACE:kind} %{NOTSPACE:other} %{GREEDYDATA:spec}}，耗时：%{SECOND:duration}s，错误信息：\n%{MILTI_LINE_TEXT:err}","%{MILTI_LINE_TEXT:msg}"
         ],
-        "pattern_definitions" : {   # 自定义字段
+        "pattern_definitions" : { 
           "MILTI_LINE_TEXT" : "(.*\n)*"
       	}
       }
     }
   ]
 }
+# MILTI_LINE_TEXT用于匹配包含换行的内容
 ```
 
 

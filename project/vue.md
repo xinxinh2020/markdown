@@ -14,6 +14,10 @@ npm install -D webpack webpack-cli # -D 表示只在开发时需要依赖该模�
 # 创建src目录
 # 在src目录下创建main.js文件
 npm install vue
+
+
+npm install css-loader -D
+npm install vue-loader vue-template-compiler -D
 ```
 
 
