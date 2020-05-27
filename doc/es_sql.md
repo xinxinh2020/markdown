@@ -171,6 +171,8 @@ GET /bank/_search
   }
 }
 
+# 查询集群的节点信息
+GET _cat/nodes?pretty
 
 ```
 
@@ -211,6 +213,36 @@ GET /bank/_search
     }
   }
 }
+```
+
+
+
+## Grok
+
+```shell
+# grok预定义匹配字段：https://www.jianshu.com/p/443f1ea7b640
+
+# 查询名字为test-log的pipeline信息
+GET _ingest/pipeline/test-log
+
+# 添加一个pipeline
+PUT _ingest/pipeline/starlight
+{
+  "description" : "starlight",
+  "processors" : [ 
+    {
+      "grok": {
+        "field": "msg",
+        "patterns": ["接收访问请求：%{NOTSPACE:uri}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func_name}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user_name},请求数据：","响应访问请求：%{NOTSPACE:uri}，标识：%{NOTSPACE:uuid}，请求方法：%{NOTSPACE:method}，处理函数：%{NOTSPACE:func_name}，来源IP：%{NOTSPACE:ip}，用户：%{NOTSPACE:user_name}，请求数据：%{GREEDYDATA:input}，请求结果：{{%{NOTSPACE} %{NOTSPACE:code}  %{NOTSPACE:kind} %{NOTSPACE:other} %{GREEDYDATA:spec}}，耗时：%{SECOND:duration}s，错误信息：\n%{MILTI_LINE_TEXT:err}","%{MILTI_LINE_TEXT:msg}"
+        ],
+        "pattern_definitions" : { 
+          "MILTI_LINE_TEXT" : "(.*\n)*"
+      	}
+      }
+    }
+  ]
+}
+# MILTI_LINE_TEXT用于匹配包含换行的内容
 ```
 
 
