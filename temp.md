@@ -26,3 +26,13 @@ Vue.js 的核心是一个允许你采用简洁的模板语法来声明式的将�
 
 commit时，把输入推到.git里
 
+Remotes? origin?Head?
+
+Head指向当前分支
+
+git clone暗藏玄机：设置origin  设置本地master分支追踪远程master分支
+
+
+
+Git大杀器-分支：
+

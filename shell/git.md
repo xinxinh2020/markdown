@@ -19,6 +19,17 @@ git mv a.txt b.txt # 把a.txt重命名为b.txt
 
 git log -p -2 # 查看最近2个commit的修改详情(git diff)
 git log --stat # 包含commit时输出的文件修改概览
+git log --all # 显示所有分支的log
+
+git remote # 查看项目的远程仓库名
+git remote -v # 查看远程仓库及对应的地址
+git remote show <remote> # 查看远程仓库详情，可以查看git pull命令会自动合并本地哪些分支，git push会自动push哪些分支，也可以看到远程哪些分支是你本地没有的，哪些分支是你本地有但远程以及把它们删掉的了
+git remote rename origin origin1 # 修改远程仓库在本地显示的名字
+git remote remove <remote> # 移除某个远程仓库
+
+git fetch # 把远程仓库的数据拉取到本地仓库中(不合并)
+git pull # 拉取远程仓库代码并合并到当前分支(需要当前分支设置了追踪某个远程分支，clone命令会自动设置master分支的追踪)
+git push <remote> <branch> # 推送本地分支到远端
 
 git branch # 查看分支
 git branch -va # 查看所有分支，包括远程分支
@@ -27,6 +38,8 @@ git branch -D [branchName] # 强制删除分支
 git branch -m oldName  newName # 重命名本地分支
 
 git reset HEAD filename # 把暂存区的文件移除到工作区
+git checkout -- filename # 撤销工作区的修改(危险操作)
+
 git reset --soft HEAD^  # 撤回刚刚的commit，代码仍然保留
 git reset --hard HEAD~1 # 同上
 git reset --hard origin/dev # 强制用远程分支替换本地分支，代码不保留
