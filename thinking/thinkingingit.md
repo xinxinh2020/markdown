@@ -14,7 +14,20 @@ checkout这个词，中文一般翻译为检出，但这个词在中文语境下
 
 
 
-因为当我们说切换的时候，可能会带来一种误解，一般是把当前的任务保存起来，再把新的任务(分支)加载进来，但是checkout实际上并没有保存当前任务状态的功能(保存状态实际上commit做的事)，可以简单的理解为它直接把新分支从本地仓库中加载进来直接覆盖掉当前分支！这就是为什么我们把修改add到暂存区以后，如果不commit一下就切换分支会失败，因为如果我们checkout到新分支这些修改就会没了的，所以少年，请先保存一下(commit)呀。
+因为当我们说切换的时候，可能会带来一种误解，一般是把当前的任务保存起来，再把新的任务(分支)加载进来，但是checkout实际上并没有保存当前任务状态的功能(保存状态实际上commit做的事)，可以简单的理解为它直接把新分支从本地仓库中加载进来直接覆盖掉当前分支！这就是为什么我们把修改add到暂存区以后，如果不commit一下就切换分支，并且修改和要切换的分支发生冲突时，就会失败，，所以少年，请先保存一下(commit)呀：
+
+```shell
+PS D:\workspace\vscode\starlight-test> git checkout job-management
+error: Your local changes to the following files would be overwritten by checkout:
+        env/uat/js.properties
+        impl/login.js
+        specs/login.cpt
+        specs/login.spec
+Please commit your changes or stash them before you switch branches.
+Aborting
+```
+
+
 
 
 
