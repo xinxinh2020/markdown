@@ -12,6 +12,8 @@ commit操作会把数据存储到本地数据库中。数据库中的数据是�
 
 Fast-Forward：当前分支只是简单地比要合并的分支落后几个提交时，git合并的时候只需要把HEAD指针向前移动几个commit即可，因此叫Fast-Forward。
 
+merge的时候，如果两个分支已经diverge,git会创建一个新的快照来合并两个分支的修改，并创建一个commit指向这个快照，这个merge commit比较特殊，它有两个父节点。
+
 
 
 ## 三种状态

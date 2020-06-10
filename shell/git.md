@@ -27,15 +27,20 @@ git remote show <remote> # 查看远程仓库详情，可以查看git pull命令
 git remote rename origin origin1 # 修改远程仓库在本地显示的名字
 git remote remove <remote> # 移除某个远程仓库
 
+git branch # 查看分支
+git branch -a # 查看所有分支，包括远程分支
+git branch -v # 查看分支及其对应最新的commit
+git branch --merged # 查看已经被合并到当前分支的分支,这些分支可以删除掉
+git branch --no-merged # 查看还没有合并到当前分支的分支 
+git branch -d <branchName> # 删除已merge分支
+git branch -D <branchName> # 强制删除分支
+git branch -m oldName  newName # 重命名本地分支
+
 git fetch # 把远程仓库的数据拉取到本地仓库中(不合并)
 git pull # 拉取远程仓库代码并合并到当前分支(需要当前分支设置了追踪某个远程分支，clone命令会自动设置master分支的追踪)
 git push <remote> <branch> # 推送本地分支到远端
 
-git branch # 查看分支
-git branch -va # 查看所有分支，包括远程分支
-git branch -d [branchName] # 删除已merge分支
-git branch -D [branchName] # 强制删除分支
-git branch -m oldName  newName # 重命名本地分支
+
 
 git reset HEAD filename # 把暂存区的文件移除到工作区
 git checkout -- filename # 撤销工作区的修改(危险操作)
