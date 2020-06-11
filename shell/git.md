@@ -26,6 +26,7 @@ git remote -v # 查看远程仓库及对应的地址
 git remote show <remote> # 查看远程仓库详情，可以查看git pull命令会自动合并本地哪些分支，git push会自动push哪些分支，也可以看到远程哪些分支是你本地没有的，哪些分支是你本地有但远程以及把它们删掉的了
 git remote rename origin origin1 # 修改远程仓库在本地显示的名字
 git remote remove <remote> # 移除某个远程仓库
+git remote add <name> <url> # 添加远程仓库
 
 git fetch # 把远程仓库的数据拉取到本地仓库中(不合并)
 git pull # 拉取远程仓库代码并合并到当前分支(需要当前分支设置了追踪某个远程分支，clone命令会自动设置master分支的追踪)

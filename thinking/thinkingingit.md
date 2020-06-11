@@ -29,5 +29,13 @@ Aborting
 
 
 
+## clone
+
+把数据下载下来，放到.git目录里
+
+把该git服务器设置为remote，并命名为origin
+
+创建一个本地master分支，trace origin/master
+
 
 
