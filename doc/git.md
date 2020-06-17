@@ -12,7 +12,11 @@ commit操作会把数据存储到本地数据库中。数据库中的数据是�
 
 Fast-Forward：当前分支只是简单地比要合并的分支落后几个提交时，git合并的时候只需要把HEAD指针向前移动几个commit即可，因此叫Fast-Forward。
 
+
+remote/xxx是Remote-tracking分支，这些分支追踪的是remote仓库上的分支，这些分支的指针精确地追踪remote分支上的状态，无法通过普通操作移动它们的指向，只有fetch/pull/push等和remote仓库通信的操作才可以同步它们的指向。
+
 merge的时候，如果两个分支已经diverge,git会创建一个新的快照来合并两个分支的修改，并创建一个commit指向这个快照，这个merge commit比较特殊，它有两个父节点。
+
 
 
 
