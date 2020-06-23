@@ -182,6 +182,10 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 
 比JDK1.7的实现粒度更细，直接使用synchronized来加锁而不用可重入锁
 
+## ConcurrentLinkedQueue
+
+
+
 ## TreeMap
 
 - 底层使用红黑树实现
@@ -350,6 +354,131 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 
 
 
+
+# 高级特性
+
+## 反射机制
+
+```java
+public interface Hello {
+    String sayHello(String hi);
+}
+
+public class HelloImpl implements Hello{
+    public String sayHello(String hi) {
+        System.out.println("hello " + hi);
+        return "hello world";
+    }
+}
+
+public class ReflectMain {
+    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        HelloImpl hello = new HelloImpl();
+        Method method = Hello.class.getMethod("sayHello", String.class); // 通过反射得到接口的方法对象
+        Object str = method.invoke(hello,"zhansan"); // 通过反射对象调用接口
+        System.out.println("return " + str);
+    }
+}
+```
+
+
+
+## 代理模式
+
+1. 访问控制：A不能被直接访问，通过代理来控制访问
+2. 功能增强
+
+相关视频：[动态代理&反射机制](https://www.bilibili.com/video/BV1HZ4y1p7F1?p=1)
+
+### 静态代理
+
+优点：简单，容易理解
+
+缺点：目标类增加，代理类也要增加；接口中方法改变了，所有实现类都要变化
+
+代码示例：
+
+```java
+// 目标对象和代理对象都要实现的接口
+public interface UsbSell {
+    float sell(int amount);
+}
+
+// 目标对象
+public class UsbKingFactory implements UsbSell{
+    public float sell(int amount) {
+        return 85.0f * amount;  // 一个Usb出厂价85.0块钱
+    }
+}
+
+// 代理类
+public class Taobao implements UsbSell{
+    private UsbKingFactory factory = new UsbKingFactory(); //代理了目标对象
+    public float sell(int amount) {
+        float price = factory.sell(amount);
+        // 此处可以添加增强功能
+        return price + amount * 10; // 每个U盘赚10块钱中间差价
+    }
+
+    public static void main(String[] args) {
+        Taobao taobao = new Taobao();
+        float price = taobao.sell(1);
+        System.out.println("Buy a usb by taobao costing :" + price);
+    }
+}
+```
+
+
+
+### 动态代理
+
+使用JDK的反射机制，创建代理对象的能力（目标对象能不能动态创建？），而不用创建类文件。
+
+有两种实现：
+
+1. JDK动态代理，使用JDK中的反射包中的相关类和接口来实现动态代理
+2. Cglib（Code Generation Library）动态代理，是第三方类，实现原理是继承，在MyBatis和Spring中都有所使用
+
+#### 基于接口的动态代理：Proxy
+
+newProxyInstance创建一个代理对象，该对象实现了第二个参数传进去的接口(所以可以强制转型为相应接口)，第三个参数指定一个InvocationHandler的实现类，该实现类编写的invoke方法中的代码逻辑指定了如何代理目标接口的方法（需要注意的是，目标接口的实现类一般保存在InvocationHandler的实现类中）。
+
+示例代码：
+
+```java
+
+// 实现了InvocationHandler
+public class UsbSellProxy implements InvocationHandler {
+    private UsbSell usb;
+    public UsbSellProxy(UsbSell usb){
+        this.usb = usb;
+    }
+
+    // 该方法代理了newProxyInstance中指定的接口中的方法，当调用了newProxyInstance返回的代理对象上的方法时，这些方法会被当作参数传到invoke方法的method参数中，这些方法的参数会被传到args参数中，invoke方法的处理逻辑一般是进行一些处理之后，调用被代理的目标对象相应的方法。所以一般需要给InvocationHandler传一个被代理接口的实现类（不然代理什么呢哈哈）
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("in proxy");
+        return method.invoke(usb,args);
+    }
+
+    // 
+    public UsbSell getProxy(){
+        return (UsbSell) Proxy.newProxyInstance(UsbKingFactory.class.getClassLoader(), UsbKingFactory.class.getInterfaces(),this);
+    }
+
+    public static void main(String[] args) {
+        UsbSellProxy proxy = new UsbSellProxy(new UsbKingFactory());
+        UsbSell usbSell = proxy.getProxy();
+        usbSell.info();
+        usbSell.sell(10);
+    }
+}
+```
+
+
+
+
+
+#### 基于继承的动态代理：Cglib
 
 
 
