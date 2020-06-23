@@ -4,7 +4,7 @@
 
 ```shell
 git init  # 将当前目录加入git管理,会在当前目录创建一个.git目录,但此时该目录下所有文件都是untraced状态的
-git add . # 添加所有修改到暂存区(staging area)
+git add . # 添加所有修改(包括untraced文件)到暂存区(staging area)
 git clone https://github.com/libgit2/libgit2 # 拉取代码仓库到本地
 git status -s # 查看状态简洁信息
 git diff # 比较工作区和暂存区的区别
@@ -41,13 +41,16 @@ git fetch # 把远程仓库的数据拉取到本地仓库中(不合并)
 git pull # 拉取远程仓库代码并合并到当前分支(需要当前分支设置了追踪某个远程分支，clone命令会自动设置master分支的追踪)
 git push <remote> <branch> # 推送本地分支到远端
 
-
+git stash # 存储工作区修改
+git stash pop # 将第一个stash应用到工作区，并从栈顶删除
+git stash apply # 将第一个stash应用到工作区，并且不删除栈中该stash
+git stash drop # 从栈中删除stash，不应用到工作区
 
 git reset HEAD filename # 把暂存区的文件移除到工作区
 git checkout -- filename # 撤销工作区的修改(危险操作)
 
 git reset --soft HEAD^  # 撤回刚刚的commit，代码仍然保留
-git reset --hard HEAD~1 # 同上
+git reset --hard HEAD~1 # 撤回刚刚的commit，代码不保留
 git reset --hard origin/dev # 强制用远程分支替换本地分支，代码不保留
 
 git pull origin # 从远端拉取代码

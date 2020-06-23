@@ -33,6 +33,10 @@ DELETE twitter
 GET twitter/_mapping # type:"text" 表示该字段可以用于全文索引
 										 # keyword 表示可以用于聚合查询
 										 # geo_point 表示地理信息
+
+# 设置单个字段最大长度（todo）
+PUT /starlight-log-user/_settings
+{   "index" : {     "highlight.max_analyzed_offset" : 100000   } }
 ```
 
 
@@ -73,6 +77,9 @@ PUT twitter/_doc/1
     "lon":"111.3"
   }
 }
+
+# 删除指定ID记录
+DELETE /starlight-log-user/_doc/VP5EynIBqR4T1am1rqlw
 ```
 
 
