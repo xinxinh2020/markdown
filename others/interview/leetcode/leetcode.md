@@ -231,6 +231,8 @@ class Solution {
 > 输出:
 > 2
 
+思路：题目中提到长度N的范围是小于500的，由此我们大概可以估计算法的复杂度应该是O(n^2)级别的
+
 代码：
 
 ```java
@@ -268,8 +270,113 @@ class Solution {
 
 
 
+### 447-number-of-boomerangs-simple
+
+给定平面上 n 对不同的点，“回旋镖” 是由点表示的元组 (i, j, k) ，其中 i 和 j 之间的距离和 i 和 k 之间的距离相等（需要考虑元组的顺序）。
+
+找到所有回旋镖的数量。你可以假设 n 最大为 500，所有点的坐标在闭区间 [-10000, 10000] 中。
+
+示例:
+
+> 输入:
+> [[0,0],[1,0],[2,0]]
+>
+> 输出:
+> 2
+>
+> 解释:
+> 两个回旋镖为 [[1,0],[0,0],[2,0]] 和 [[1,0],[2,0],[0,0]]
+
+小技巧：如何计算两点的距离？只需要求两个点之间距离的平方就可以，不用求它们之间的真实距离。
+
+思路：
+
+建立第i个节点到其他节点距离的查找表，值为距离相同的节点数，统计节点数大于等于2的表项，**假如距离相同的节点数为n，满足条件的元组数量为n*(n-1)**：
+
+![image-20200624160935259](../image/image-20200624160935259.png)
+
+代码：
+
+```java
+// O(n^2)
+class Solution {
+    public int numberOfBoomerangs(int[][] points) {
+        int len = points.length;
+        int result = 0;
+        for(int i=0;i<len;i++){ 
+            Map<Integer, Integer> map = new HashMap<>();
+            int[] point = points[i]; // 以点i为锚点，建立点i到其他点距离的查找表
+            for(int j=0;j<len;j++){
+                if(j != i){
+                    int distance = dis(point,points[j]);
+                    map.put(distance,map.getOrDefault(distance,0)+1);
+                }
+            }
+            for(Integer c : map.values()){
+                if(c>=2){
+                    result += c*(c-1); // 符合条件的元组
+                }
+            }
+        }
+        return result;
+    }
+
+    // 两点之间距离（的平方）
+    private int dis(int[] point1, int[] point2){
+        return (point1[0]-point2[0])*(point1[0]-point2[0]) + (point1[1]-point2[1])*(point1[1]-point2[1]);
+    }
+}
+```
+
+
+
+
+
+### 149-max points on a line-hard-todo
+
+
+
+给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+
+示例 1:
+
+> 输入: [[1,1],[2,2],[3,3]]
+> 输出: 3
+> 解释:
+> ^
+> |
+> |        o
+> |     o
+> |  o  
+> +------------->
+> 0  1  2  3  4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 计算x的n次方的优化算法
+
 普通算法：x连乘n次，算法复杂度O(n)
 可以用递归的方式，pow(x, n/2)，算法复杂度O(logn)
 
