@@ -182,6 +182,10 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 
 比JDK1.7的实现粒度更细，直接使用synchronized来加锁而不用可重入锁
 
+## ConcurrentLinkedQueue
+
+
+
 ## TreeMap
 
 - 底层使用红黑树实现
@@ -316,6 +320,12 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 
 ## volatile
 
+解决内存可见性问题。多线程一般会把内存中的数据读到cpu的缓存中，并发读的时候就会有问题。
+Java的内存模型规定，所有变量都必须存储在主存之中，每个线程都有自己的工作内存（类似于高速缓存），线程对变量的操作必须在工作内存中进行，不能直接对主存进行操作。
+普通共享变量不能保证内存可见性，变量被修改后什么时候从工作空间写入到主存中是不确定的。
+volatile修饰的共享变量可以保证内存可见性，当这些变量被修改时，会保证修改的值立即写入到内存中，并且让其他线程中该变量的缓存无效，其他线程要访问该变量时，只能去主存中重新读取。
+加锁也能保证内存可见性，因为加锁之后可以保证同一时间只有一个线程会执行同步代码，释放锁的时候会把工作内存中的共享变量写入到主存中。
+
 - volatile保证了内存可见性，但不能保证操作的原子性，如++操作本身就不是一个原子操作
 - 要保证数据的原子性操作，可以使用AtomicXXX开头的包装类，如AtomicInteger，这些类的修改数据操作都是使用CAS操作进行的，CAS操作失败会一直循环重试到成功为止，通过CAS的方式来保证原子性（同步）性能会比加锁要好
 
@@ -349,13 +359,211 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 
 
 
+## NIO
+
+阻塞io->轮询io->使用selector
+
+我们可以创建多个通道，那么我们怎么知道哪个通道有事件就绪呢？有两种方法，一种是去轮询，一种是使用回调。轮询我们懂知道，说最简单但性能也比较差的，linux内核有个poll命令，就说去轮询哪些io(即文件描述符fd)已经就绪了。大概在linux2.6之后，人们觉得poll性能太差了，于是又提出了一个epoll的概念，它使用事件注册的方式来管理多个fd，fd注册到epoll以后，epoll不需要去轮询它的状态，而是fd就绪以后给epoll发送事件，epoll就知道有fd就绪了。
+jdk 1.5以后的nio利用了epoll这个机制，nio可以用一个selector专门来管理所有通道的状态，适合并发度很高但每个并发io的数据量又不大的场景。实际上调用selector的select()后也是会阻塞的，所以在并发度不高的情况下使用nio不一定性能就比传统io要好，但是在并发度很高但每个并发io的数据量又不大的场景就很好用了。
+
+## 阻塞/非阻塞，同步/异步
+阻塞/非阻塞是指用户线程发起io请求后，需不需要等待结果返回后才能继续执行。
+阻塞非阻塞是线程的一种状态。同步异步指的是被调用者结果返回时通知线程的一种机制。
+
+# 高级特性
+
+## 反射机制
+
+```java
+public interface Hello {
+    String sayHello(String hi);
+}
+
+public class HelloImpl implements Hello{
+    public String sayHello(String hi) {
+        System.out.println("hello " + hi);
+        return "hello world";
+    }
+}
+
+public class ReflectMain {
+    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        HelloImpl hello = new HelloImpl();
+        Method method = Hello.class.getMethod("sayHello", String.class); // 通过反射得到接口的方法对象
+        Object str = method.invoke(hello,"zhansan"); // 通过反射对象调用接口
+        System.out.println("return " + str);
+    }
+}
+```
+
+
+
+## 代理模式
+
+1. 访问控制：A不能被直接访问，通过代理来控制访问
+2. 功能增强
+
+相关视频：[动态代理&反射机制](https://www.bilibili.com/video/BV1HZ4y1p7F1?p=1)
+
+### 静态代理
+
+优点：简单，容易理解
+
+缺点：目标类增加，代理类也要增加；接口中方法改变了，所有实现类都要变化
+
+代码示例：
+
+```java
+// 目标对象和代理对象都要实现的接口
+public interface UsbSell {
+    float sell(int amount);
+}
+
+// 目标对象
+public class UsbKingFactory implements UsbSell{
+    public float sell(int amount) {
+        return 85.0f * amount;  // 一个Usb出厂价85.0块钱
+    }
+}
+
+// 代理类
+public class Taobao implements UsbSell{
+    private UsbKingFactory factory = new UsbKingFactory(); //代理了目标对象
+    public float sell(int amount) {
+        float price = factory.sell(amount);
+        // 此处可以添加增强功能
+        return price + amount * 10; // 每个U盘赚10块钱中间差价
+    }
+
+    public static void main(String[] args) {
+        Taobao taobao = new Taobao();
+        float price = taobao.sell(1);
+        System.out.println("Buy a usb by taobao costing :" + price);
+    }
+}
+```
+
+
+
+### 动态代理
+
+使用JDK的反射机制，创建代理对象的能力（目标对象能不能动态创建？），而不用创建类文件。
+
+有两种实现：
+
+1. JDK动态代理，使用JDK中的反射包中的相关类和接口来实现动态代理
+2. Cglib（Code Generation Library）动态代理，是第三方类，实现原理是继承，在MyBatis和Spring中都有所使用
+
+#### 基于接口的动态代理：Proxy
+
+newProxyInstance创建一个代理对象，该对象实现了第二个参数传进去的接口(所以可以强制转型为相应接口)，第三个参数指定一个InvocationHandler的实现类，该实现类编写的invoke方法中的代码逻辑指定了如何代理目标接口的方法（需要注意的是，目标接口的实现类一般保存在InvocationHandler的实现类中）。
+
+示例代码：
+
+```java
+
+// 实现了InvocationHandler
+public class UsbSellProxy implements InvocationHandler {
+    private UsbSell usb;
+    public UsbSellProxy(UsbSell usb){
+        this.usb = usb;
+    }
+
+    // 该方法代理了newProxyInstance中指定的接口中的方法，当调用了newProxyInstance返回的代理对象上的方法时，这些方法会被当作参数传到invoke方法的method参数中，这些方法的参数会被传到args参数中，invoke方法的处理逻辑一般是进行一些处理之后，调用被代理的目标对象相应的方法。所以一般需要给InvocationHandler传一个被代理接口的实现类（不然代理什么呢哈哈）
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("in proxy");
+        return method.invoke(usb,args);
+    }
+
+    // 
+    public UsbSell getProxy(){
+        return (UsbSell) Proxy.newProxyInstance(UsbKingFactory.class.getClassLoader(), UsbKingFactory.class.getInterfaces(),this);
+    }
+
+    public static void main(String[] args) {
+        UsbSellProxy proxy = new UsbSellProxy(new UsbKingFactory());
+        UsbSell usbSell = proxy.getProxy();
+        usbSell.info();
+        usbSell.sell(10);
+    }
+}
+```
 
 
 
 
 
+#### 基于继承的动态代理：Cglib
 
 
+
+
+
+# JVM
+
+## 内存模型
+
+### 线程私有
+- 程序计数器，每个线程都有一块独立的内存（但很小）来存放该线程所执行的字节码的行号指示器。
+- 虚拟机栈，每个线程都有一个，生命周期和线程相同。每个方法在执行的同时都会创建一个栈帧压入到该线程的栈中。栈帧中的局部变量表的大小在进入方法前就已经是完全确定的，在运行期间不会发生变化。
+- 本地方法栈，和虚拟机栈类似，只不过虚拟机栈是为虚拟机执行Java方法（字节码）服务，而本地方法栈是为Native方法服务。有些虚拟机直接就把本地方法栈和虚拟机栈合二为一了。
+
+
+### 线程共享
+
+- Java堆，存放对象实例。
+- 方法区，存放类信息，常量，静态变量等。HotSpot用户常称之为永久代。
+
+## 对象的创建
+- 当虚拟机遇到一条new指令时，会去常量池中定位到一个类的引用，并检查这个类是否已经加载，没有的话要先加载。
+- 然后为新生对象分配内存。给对象分配内存也是一门学问，根据使用的GC收集器不同，内存中分为规整和不规整两种情况。规整的内存分配只需要移动指针的位置就可以了(指针碰撞)，如果是不规整的，就需要维护一个列表来记录哪些内存是未使用的。分配内存的时候还需要考虑并发地创建对象时的线程不安全问题，TLAB为解决这个问题的方案之一。
+- 将内存空间初始化为0
+- 设置对象的对象头，保存一些信息，如GC分代年龄，类的元数据，对象的哈希码等
+- 执行<init>方法
+
+## TLAB
+本地线程分配缓冲（Thread Local Allocation Buffer），解决并发地创建对象时，两个线程都去修改堆内存指针（空闲内存和已使用内存的分界线）导致的问题。
+
+
+## 垃圾回收机制
+### 哪些内存需要回收
+- 引用计数法：无法解决对象相互引用的情况，主流虚拟机没有采用这种算法
+- 可达性分析算法：通过“GC ROOT”对象作为起点向下搜索，形成一条引用链，没有在引用链上的对象就是要回收掉的对象。GC ROOT对象包括以下几种：
+    - 虚拟机栈中引用的对象
+    - 方法区中类静态属性和常量引用的对象
+
+### 回收时机
+没有在GC引用链中的对象，会被标记，在回收前会调用对象的finalize()方法，对象可以在finalize中拯救自己，否则就会被回收掉。
+
+### 垃圾收集算法
+- 标记清除算法：会产生大量内存碎片
+- 复制算法：每次使用一个Eden和一个Survivor，回收时把所有对象复制到另外一个Survivor，如果Survivor不够放，会使用老年代进行分配担保，把放不下的对象放到老年代里。经历过多次GC仍存活的对象也会被放到老年代中。
+
+## 类加载过程
+生命周期：加载，验证，准备，解析，初始化，使用，卸载
+- 加载
+    - 通过类的全限定名来获取定义此类的二进制字节流（并没有指定从哪里获取）
+    - 把二进制流代表的类保存到方法区的运行时数据结构
+    - 在内存中(按道理应该是在堆内存中的老年代？)生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口(保存的是类的元数据信息吧，比如名字？)
+- 验证：确保加载的class文件的字节流是符合虚拟机要求的，可以防止一些恶意的代码导致系统奔溃
+- 准备：在方法区为类变量分配内存并设置初始值
+- 解析：把符号引用替换为直接引用
+- 初始化：执行类构造器(<clinit>()方法)，执行静态变量赋值和静态代码块
+  
+
+### 类加载器/双亲委派
+通过一个类的全限定名来获取描述此类的二进制字节流，应用程序可以自己决定如何去获取所需要的类。判断两个类是否相等，只有在这两个类是由同一个类加载器加载的前提才有可能。
+系统提供的类加载器：
+- 启动类加载器(Bootstrap)：加载$JAVA_HOME/lib下的类
+- 扩展类加载器(Extension)：加载$JAVA_HOME/lib/ext下的类
+- 系统类加载器(Application)：
+
+### 初始化的时机
+- 在遇到new或访问静态变量或调用静态方法时
+- 使用java.lang.reflect包进行反射调用时
+- 初始化一个类的时候，如果父类还没初始化，也要对父类进行初始化
+- 虚拟机启动时，用户指定要执行的包含main方法的类
+- jdk1.7 java.lang.invoke.MethodHandle实例解析到REF_getStatic的方法句柄
 
 
 
