@@ -302,6 +302,14 @@ put的时候，如果没有hash冲突，就直接无锁CAS插入，如果存在h
 - LinkedHashSet 底层使用LinkedHashMap实现，两者的关系类似与HashMap和HashSet的关系
 
   
+  
+  
+  
+## CopyOnWriteArrayList/CopyOnWriteArraySet
+
+  参考：https://ifeve.com/java-copy-on-write/
+
+适用于读多写少的场景，对写操作加锁，对读操作不加锁，只能保证数据的最终一致性，但不能保证数据的实时一致性。
 
 # 并发
 

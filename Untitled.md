@@ -1,72 +1,21 @@
+精通：
 
+Java
 
-workflow:
+掌握：
 
-```json
-[
-    {
-        "A":{"type":"application","after":[]}
-    },
-    {
-        "B":{"after":["A","D"]}
-    },
-    {
-        "C":{"after":["B"]}
-    },
-    {
-        "D":{"after":["C"]}
-    },
-    {
-        "E":{"after":["D"]}
-    },
-    {
-        "F":{"after":["E"]}
-    } 
-]
-```
+Linux,Golang,CloudStack
+
+熟悉：
+
+(Spring,MyBatis)JavaScript，VueJs，NodeJs，Mysql,Shell,Python，Docker，Kubernetes ,KVM
+
+了解
+
+ElasticSearch,Kibana,Grafana,Ansible,Saltstack,Android
 
 
 
-runtime:
+很久没用：
 
-```json
-[
-    {
-        "A":{
-            "count": "1",
-            "history":[
-            	{"1":[{"index0":"success"}]}
-        	]
-        }
-    },
-    {
-        "B":{
-            "count": "3",
-            "history":[
-            	{"1":[{"index0":"success"}]},
-            	{"2":[{"index0":"success"}]},
-            	{"3":[{"index0":"success"}]}
-        	]
-        }
-    },
-    {
-        "C":{
-            "count": "2",
-            "history":[
-            	{"1":[{"index0":"success"},{"index1":"running"},{"index2":"success"}]},
-            	{"2":[{"index0":"success"},{"index1":"running"},{"index2":"success"}]}
-        	]
-        }
-    },
-    {
-        "D":{
-            "count": "2",
-            "history":[
-            	{"1":[{"index0":"success"}]},
-            	{"2":[{"index0":"success"}]}
-        	]
-        }
-    }
-]
-```
-
+C/C++,C#,Android,Unity3D

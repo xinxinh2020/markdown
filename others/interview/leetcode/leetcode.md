@@ -357,9 +357,44 @@ class Solution {
 
 
 
+## 查找表&滑动窗口
 
+### 219 contains-duplicate-ii(easy)
 
+给定一个整数数组和一个整数 k，判断数组中是否存在两个不同的索引 i 和 j，使得 nums [i] = nums [j]，并且 i 和 j 的差的 绝对值 至多为 k。
 
+ 示例 1:
+
+> 输入: nums = [1,2,3,1], k = 3
+> 输出: true
+
+代码：
+
+```java
+// 适用滑动窗口
+class Solution {
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        int l = 0;
+        int r = 1;
+        while(r < nums.length){
+            if(r-l <= k){
+                if(nums[r] == nums[l]) return true;
+                r++;
+                continue;
+            }
+            l++;
+            while(l<r){                      
+                if(nums[r] == nums[l]) return true;       
+                l++; 
+            }
+            r++;      
+        }
+        return false;
+    }
+}
+```
+
+滑动窗口+查找表解法参考：https://coding.imooc.com/lesson/82.html#mid=2716
 
 
 
