@@ -164,6 +164,35 @@ class Solution {
 
 ## 查找表
 
+### 217 contains-duplicate(easy)
+
+给定一个整数数组，判断是否存在重复元素。
+
+如果任意一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。 
+
+示例 1:
+
+> 输入: [1,2,3,1]
+> 输出: true
+
+代码：
+
+```java
+// 算法复杂度O(n)
+class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for(int i=0;i<nums.length;i++){
+            if(set.contains(nums[i])) return true;
+            set.add(nums[i]);
+        }
+        return false;
+    }
+}
+```
+
+
+
 ### leetcode242-有效的异位字符串(anagram)
 
 给定两个字符串 *s* 和 *t* ，编写一个函数来判断 *t* 是否是 *s* 的字母异位词。
@@ -397,6 +426,10 @@ class Solution {
 滑动窗口+查找表解法参考：https://coding.imooc.com/lesson/82.html#mid=2716
 
 
+
+## 链表
+
+### 206
 
 
 
