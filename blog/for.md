@@ -39,10 +39,14 @@ for(let k = 0; k < array.length; k++) {
 foreach
 
 ```javascript
-let arr = [9, 8, 7, 6];
+let arr = [9, 8, 7, 6]
 arr.forEach(function(value, index, array) {
-				console.log(value,index,array);
-});
+				console.log(value,index,array)
+})
+
+arr.forEach(num =>{
+    console.log(num)
+})
 ```
 
 for...in
