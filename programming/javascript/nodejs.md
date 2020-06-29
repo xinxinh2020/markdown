@@ -16,8 +16,10 @@
 - REPL：命令行交互界面
 - require('./module')可以导入一个模块，参数是模块的文件名(./module.js)
 - npm install本地安装的包自动会加到项目的package.json的依赖中去
-- 原则上，所有包都应该安装到本地，出了少数提供可执行命令并且在多个项目中共同使用的包，如vue-cli，详见：[使用本地还是全局包？](https://nodejs.dev/learn/npm-global-or-local-packages)
 - 前后端分离前，前端页面写完是要交给后端的（如jsp）
+- 原则上，所有包都应该安装到本地，出了少数提供可执行命令并且在多个项目中共同使用的包，如vue-cli，详见：[使用本地还是全局包？](https://nodejs.dev/learn/npm-global-or-local-packages)
+- npx用于在项目目录下运行可执行的包命令，详见：[npx](https://nodejs.dev/learn/the-npx-nodejs-package-runner)
+- setTimeout会把回调函数放到消息队列（Message Queue）中，消息队列中的函数需要等到调用栈(call stack)中的函数都执行完了以后才会执行，Promise会把回调放在任务队列（Job Queue）中，任务队列中的任务会优先被执行，详见：[event loop](https://nodejs.dev/learn/the-nodejs-event-loop)
 - express实例的use方法可以传一个函数作为中间件（类似于拦截器），常用中间件：
   - static：用于设置静态资源目录
   - 用来做路由分发
@@ -51,9 +53,6 @@ npm uninstall <package-name> # 删除当前项目下指定包
 	-S, --save # 同时删除package.json中的dependencies引用
 	-D, --save-dev # 同时删除package.json的devDependencies中
 	-g # 删除全局范围的包
-
-
-
 ```
 
 
