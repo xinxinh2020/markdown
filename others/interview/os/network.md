@@ -74,5 +74,9 @@ MSL(Max Segment Lifttime)指一个tcp报文在传输时的最大存活时间，2
 
 
 
+## 中断
+
+
+
 
 

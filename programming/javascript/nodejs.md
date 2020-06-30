@@ -13,16 +13,32 @@
 ## 基础知识
 
 - 在服务器端，JS可以操作数据库和文件
+
+- Nodejs运行V8引擎，性能很好
+
+  一个Nodejs应用运行在一个单独的进程中，不需要为每个请求创建一个新的线程。
+
+  现在很多时候JS引擎也是将JS代码进行(JIT)编译后来运行的，而不仅仅只是解释它们
+
 - REPL：命令行交互界面
+
 - require('./module')可以导入一个模块，参数是模块的文件名(./module.js)
+
 - npm install本地安装的包自动会加到项目的package.json的依赖中去
+
 - 前后端分离前，前端页面写完是要交给后端的（如jsp）
+
 - 原则上，所有包都应该安装到本地，出了少数提供可执行命令并且在多个项目中共同使用的包，如vue-cli，详见：[使用本地还是全局包？](https://nodejs.dev/learn/npm-global-or-local-packages)
+
 - npx用于在项目目录下运行可执行的包命令，详见：[npx](https://nodejs.dev/learn/the-npx-nodejs-package-runner)
+
 - setTimeout会把回调函数放到消息队列（Message Queue）中，消息队列中的函数需要等到调用栈(call stack)中的函数都执行完了以后才会执行，Promise会把回调放在任务队列（Job Queue）中，任务队列中的任务会优先被执行，详见：[event loop](https://nodejs.dev/learn/the-nodejs-event-loop)
+
 - express实例的use方法可以传一个函数作为中间件（类似于拦截器），常用中间件：
   - static：用于设置静态资源目录
   - 用来做路由分发
+  
+- 错误处理：https://nodejs.dev/learn/error-handling-in-nodejs
 
 
 
@@ -36,7 +52,7 @@ npm init --yes # 初始化项目
 npm install # 安装package.json中指定的项目依赖到node_modules文件夹下
 	--production # 不安装devDependencies
 npm install <package-name> # 安装指定包到当前文件树的node_modules目录下，并添加到package.json的dependencies中
-	-g # 安装指定包到全局的node_modules中，并且不会自动添加到当前项目的依赖中，项目中不能使用(require)全局包
+	-g # 安装指定包到全局的node_modules中，并且不会自动添加到当前项目的依赖中，项目中不能使用(require)全局包,如果该包提供了可执行命令，该命令会被加入到PATH中
 	--save # 安装指定包并把它添加到package.json的dependencies中，npm5以后无需显式指定该参数
 	--save-dev # 安装指定包并把它添加到package.json的devDependencies中
 npm root -g # 查看全局node_modules的位置
@@ -118,6 +134,12 @@ let str2 = qs.unescape('name%3D%E4%BD%A0%E5%A5%BD%26age%3D18%26role%3D%E5%AD%A6%
 
 参考文档：https://nodejs.org/dist/latest-v12.x/docs/api/process.html
 
+环境变量（process.env）
+
+- NODE_ENV ：development、production
+
+
+
 
 
 ### console
@@ -130,6 +152,21 @@ let str2 = qs.unescape('name%3D%E4%BD%A0%E5%A5%BD%26age%3D18%26role%3D%E5%AD%A6%
 - console.trace：打印堆栈
 - console.time('doSomething()')/console.timeEnd('doSomething()')：计时
 - console.error：错误输出
+
+
+### JSON
+
+
+
+## 标准库模块
+
+### events
+
+https://nodejs.org/api/events.html#events_events
+
+### http/https
+
+https://nodejs.org/api/http.html
 
 ## 常用第三方库
 
@@ -161,6 +198,7 @@ vuex # import Vuex from 'vuex'
 ws # websocket
 socket.io # websocket
 jsonwebtoken # 生成token
+axios # http请求
 ```
 
 ## 交互式界面
