@@ -2,6 +2,38 @@
 
 
 
+# 常用命令
+
+```shell
+# vue
+# vue命令安装： npm install -g @vue/cli
+vue ui # 以图形化界面创建和管理项目
+vue create <app-name> # 创建一个项目
+vue inspect # 审查解析好的 webpack 配置，但输出的并不是一个有效的 webpack 配置文件，而是一个用于审查的被序列化的格式
+# webpach配置可以参考 <projectRoot>/node_modules/@vue/cli-service/webpack.config.js
+vue inspect module.rules.0 # 只审查第一条规则
+vue inspect --rule vue # 审查指定规则
+vue inspect --plugin html # 审查指定插件
+vue serve # 对单个.vue文件进行快速原型开发，启动一个服务器，需要安装一个全局扩展：npm install -g @vue/cli-service-global
+vue build # 类似于vue serve，但构建的是一个生产环境(Production)的应用
+
+# vue-cli-service
+# vue-cli-service命令安装：npm install @vue/cli-service
+vue-cli-service serve # 启动一个开发服务器(development)
+ 	--mode # 指定环境模式 (默认值：development)
+ 	--host # 指定地址
+ 	--port # 指定端口
+ 	--https # 使用https
+ 	
+vue-cli-service build # 在dist/目录产生一个可用于生产环境的包,
+	--mode       #  指定环境模式 (默认值：production)
+	--report      # 生成 report.html 以帮助分析包内容
+	--modern      # 面向现代浏览器带自动回退地构建应用
+vue-cli-service inspect # vue inspect实际上调用的就是这个命令
+```
+
+
+
 # 基础
 
 响应式：数据的变化会导致页面内容变化
