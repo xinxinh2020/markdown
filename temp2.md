@@ -1,2 +1,1 @@
-# NodeJS http服务端获取POST请求数据
-
+Spring Cloud Netflix Hystrix会找到标记了注解`@HystrixCommand`的方法，并把这些方法代理起来，从而让Hystrix能够监控它。Hystrix只会监控`@Component` 和`@Service`类中的方法，当监控到某个方法的失败调用次数达到一定阈值的时候，就会断开电路，后续对该方法的调用都会立即失败，并把对该方法的调用重定向到一个fallback方法中。
