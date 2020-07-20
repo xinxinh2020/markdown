@@ -429,17 +429,904 @@ class Solution {
 
 ## 链表
 
-### 206
+- 如果空间不做限制的话可以考虑将链表拷到一个数组中进行解决
+- 使用虚拟头结点可以简化头结点的处理
+
+### 150 逆波兰表达式
+
+### 71 简化路径
 
 
 
 
 
+## 栈和队列
+
+队列：可用于树的广度优先遍历(102 103 199都是考这个知识点)
+
+优先队列底层一般是堆结构。
+
+### 102 二叉树的层序遍历
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+        List<TreeNode> queue = new ArrayList<>();
+        List<Integer> a = new ArrayList<>();
+        a.add(root.val);
+        result.add(a);
+        if(root.left !=null) queue.add(root.left);
+        if(root.right!=null) queue.add(root.right);
+        while(queue.size()>0){
+            List<Integer> aa = new ArrayList<>();
+            for(int i=0;i<queue.size();i++){
+                aa.add(queue.get(i).val);
+            }
+            result.add(aa);
+            int size = queue.size();
+            for(int i=0; i<size;i++){
+                TreeNode node = queue.remove(0);
+                if(node.left!=null) queue.add(node.left);
+                if(node.right!=null) queue.add(node.right);
+            }
+        }
+        return result;
+    }
+}
+```
+
+
+
+### [103. 二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)-中等
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+        List<TreeNode> queue = new ArrayList<>();
+        List<Integer> a = new ArrayList<>();
+        a.add(root.val);
+        result.add(a);
+        if(root.left !=null) queue.add(root.left);
+        if(root.right!=null) queue.add(root.right);
+        int count = 1;
+        while(queue.size()>0){
+            List<Integer> aa = new ArrayList<>();
+            if( count % 2 == 0){
+                for(int i=0;i<queue.size();i++){
+                    aa.add(queue.get(i).val);
+                }
+            }else{
+                for(int i=queue.size()-1;i>=0;i--){
+                    aa.add(queue.get(i).val);
+                }
+            }
+            
+            result.add(aa);
+            int size = queue.size();
+            for(int i=0; i<size;i++){
+                TreeNode node = queue.remove(0);
+                if(node.left!=null) queue.add(node.left);
+                if(node.right!=null) queue.add(node.right);
+            }
+            count++;
+        }
+        return result;
+    }
+}
+```
 
 
 
 
 
+### [199. 二叉树的右视图](https://leetcode-cn.com/problems/binary-tree-right-side-view/)-中等
+
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+示例:
+
+> 输入: [1,2,3,null,5,null,4]
+> 输出: [1, 3, 4]
+> 解释:
+>   1            <---
+>  /   \
+> 2     3         <---
+>  \     \
+>   5     4       <---
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if(root == null) return result;
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.offer(root);
+        while(queue.size()>0){
+            TreeNode right = null;
+            int size = queue.size();
+            for(int i=0;i<size;i++){
+                right = queue.poll();
+                if(right.left != null) queue.offer(right.left);
+                if(right.right != null) queue.offer(right.right);
+            }
+            result.add(right.val);
+        }
+        return result;
+    }
+}
+```
+
+## 二叉树
+
+### [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+
+> 给定一个二叉树，找出其最大深度。二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+>
+> 说明: 叶子节点是指没有子节点的节点。
+>
+> 示例：
+> 给定二叉树 [3,9,20,null,null,15,7]，
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回它的最大深度 3 。
+
+实现：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root == null)  return 0;
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        int max = left;
+        if(right > max) max = right;
+        return 1 + max;
+    }
+}
+```
+
+
+
+### [111. 二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
+
+给定一个二叉树，找出其最小深度。
+
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+
+说明: 叶子节点是指没有子节点的节点。
+
+> 示例:
+>
+> 给定二叉树 [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回它的最小深度  2.
+
+代码实现：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int minDepth(TreeNode root) {
+        if(root==null) return 0;
+
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        if(left == 0 && right == 0) return 1;
+        if(left == 0 && right != 0) return right + 1;  // 求的是到叶子节点的深度，不是层数  
+        if(left != 0 && right == 0) return left + 1;
+
+        if(left < right){
+            return left + 1;
+        }else{
+            return right + 1;
+        }
+    }
+}
+```
+
+### 226. 翻转二叉树
+
+翻转一棵二叉树。
+
+示例：
+
+> 输入：
+>   4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+输出：
+    4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+
+谷歌翻车的面试题 ： https://twitter.com/mxcl/status/608682016205344768
+
+代码：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if(root==null) return null;
+        TreeNode left = root.left;
+        root.left = root.right;
+        root.right = left;
+        invertTree(root.left);
+        invertTree(root.right);
+        return root;
+    }
+}
+```
+
+### [110. 平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/)
+
+### [112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
+
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean hasPathSum(TreeNode root, int sum) {
+        return hasPathSum(root,sum,0);
+    }
+
+    public boolean hasPathSum(TreeNode root, int sum, int currentSum){
+        if(root == null) return false;
+        if( root.left == null && root.right == null){
+            if(currentSum + root.val == sum) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        if(hasPathSum(root.left, sum, currentSum+root.val)){
+            return true;
+        }
+        if(hasPathSum(root.right, sum, currentSum+root.val)){
+            return true;
+        }
+        return false;
+    }
+}
+```
+
+
+
+### [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例:
+
+> 给定如下二叉树，以及目标和 sum = 22，
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+返回:
+
+     [
+        [5,4,11,2],
+        [5,8,4,5]
+     ]
+
+代码实现：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        findPath(root,sum,path,0,result);
+        return result;
+    }
+
+    public void findPath(TreeNode root, int sum,List<Integer> path,int total,List<List<Integer>> result){
+        if(root == null) return;
+        path.add(root.val);
+        total += root.val;
+        if(root.left == null && root.right == null){
+            List<Integer> path2 = new ArrayList<>();
+            path2.addAll(path);
+            if(total == sum) result.add(path2);    
+            path.remove(path.size()-1); 
+            return;
+        }
+        if(root.left != null) findPath(root.left,sum,path,total,result);     
+        if(root.right != null) findPath(root.right,sum,path,total,result);
+        path.remove(path.size()-1);
+    }
+}
+```
+
+### [129. 求根到叶子节点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
+
+给定一个二叉树，它的每个结点都存放一个 0-9 的数字，每条从根到叶子节点的路径都代表一个数字。
+
+例如，从根到叶子节点路径 1->2->3 代表数字 123。
+
+计算从根到叶子节点生成的所有数字之和。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例 1:
+
+> 输入: [1,2,3]
+>     1
+>    / \
+>   2   3
+> 输出: 25
+> 解释:
+> 从根到叶子节点路径 1->2 代表数字 12.
+> 从根到叶子节点路径 1->3 代表数字 13.
+> 因此，数字总和 = 12 + 13 = 25.
+> 示例 2:
+>
+> 输入: [4,9,0,5,1]
+>     4
+>    / \
+>   9   0
+>  / \
+> 5   1
+> 输出: 1026
+> 解释:
+> 从根到叶子节点路径 4->9->5 代表数字 495.
+> 从根到叶子节点路径 4->9->1 代表数字 491.
+> 从根到叶子节点路径 4->0 代表数字 40.
+> 因此，数字总和 = 495 + 491 + 40 = 1026.
+
+代码实现(0ms)：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int sumNumbers(TreeNode root) {
+        return compute(root,0);
+    }
+
+    public int compute(TreeNode root,int currentSum) {
+        if(root == null) return 0;
+        currentSum = currentSum * 10 + root.val;
+        if(root.left == null && root.right == null) return currentSum;
+        int left = 0;
+        int right = 0;
+        if(root.left != null) left = compute(root.left,currentSum);
+        if(root.right != null) right = compute(root.right,currentSum);
+        return left + right;
+    }
+}
+```
+
+### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+给定一个二叉树，它的每个结点都存放着一个整数值。找出路径和等于给定数值的路径总数。路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+示例：
+
+> root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+      10
+     /  \
+    5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+返回 3。和等于 8 的路径有:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+     3.  -3 -> 11
+
+代码实现：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int pathSum(TreeNode root, int sum) {
+        if( root == null)  return 0;
+        int found = 0;
+        found = getSumStartAtNode(root,sum,0);
+        int left = pathSum(root.left,sum);
+        int right = pathSum(root.right,sum);
+        return found+left+right;
+    }
+
+    public int getSumStartAtNode(TreeNode root, int sum, int currentSum){
+        if(root == null)  return 0;
+        int found = 0;
+        currentSum += root.val;
+        if(currentSum == sum) found = 1;
+        int left = getSumStartAtNode(root.left,sum, currentSum);
+        int right = getSumStartAtNode(root.right,sum,currentSum);
+        return found + left + right;
+    }
+}
+```
+
+
+
+### [235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+代码实现：
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+         if(root == null) return null;
+         if(root.val > p.val && root.val > q.val){
+             return lowestCommonAncestor(root.left, p,q);
+         }else if(root.val < p.val && root.val < q.val){
+             return lowestCommonAncestor(root.right,p,q);
+         }else {
+             return root;
+         }
+        
+    }
+}
+```
+
+
+
+### [98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        if(root == null) return true;
+        boolean left = isValidBSTByNode(root.left,root.val,true);
+        boolean right = isValidBSTByNode(root.right,root.val,false);
+        if(!left||!right) return false;
+        left = isValidBST(root.left); // 判断root.left是不是二叉搜索树
+        right = isValidBST(root.right); // 判断root.right是不是二叉搜索树
+        return left && right;
+    }
+    // 以root节点为根的树的所有值是否都小于/大于sum
+    public boolean isValidBSTByNode(TreeNode root,int num, boolean left){
+        if(root == null) return true;
+        if(left){
+            if(root.val >= num) return false;
+        }else{
+            if(root.val <= num) return false;
+        }    
+        boolean leftResult = isValidBSTByNode(root.left,num,left);
+        boolean rightResult = isValidBSTByNode(root.right,num,left);
+        return leftResult&&rightResult;
+    }
+}
+```
+
+### [230. 二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int count = 0;
+    public int kthSmallest(TreeNode root, int k) {
+        if(root == null) return -1;
+        int left = kthSmallest(root.left,k);
+        if(left != -1) return left;
+        count++; // 中序遍历
+        if(count == k) return root.val;
+        return kthSmallest(root.right,k);
+    }
+}
+```
+
+## 递归
+
+### [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+```java
+class Solution {
+    Map<Character,Character[]> map = new HashMap<>();
+    {
+        map.put('2',new Character[]{'a','b','c'});
+        map.put('3',new Character[]{'d','e','f'});
+        map.put('4',new Character[]{'g','h','i'});
+        map.put('5',new Character[]{'j','k','l'});
+        map.put('6',new Character[]{'m','n','o'});
+        map.put('7',new Character[]{'p','q','r','s'});
+        map.put('8',new Character[]{'t','u','v'});
+        map.put('9',new Character[]{'w','x','y','z'});
+
+    } 
+    public List<String> letterCombinations(String digits) {
+        List<String> result = new ArrayList<String>();
+        findString(digits,0,"",result);
+        return result;
+    }
+    void findString(String digits,int digIndex,String str, List<String> result ){
+        if(digits == null) return;
+        if(digits.length() <= digIndex) return;
+        char c = digits.charAt(digIndex);
+        Character[] cs = this.map.get(c);
+        for(int i=0; i<cs.length; i++){
+            String curr = str + cs[i];
+            if(digits.length() <= digIndex+1){
+                result.add(curr);
+            }else{
+                findString(digits, digIndex+1, curr, result);
+            }        
+        }
+    }
+}
+```
+
+## 排列组合
+
+### [46. 全排列](https://leetcode-cn.com/problems/permutations/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> permute(int[] nums) {
+        List<Integer> input = new ArrayList<>();
+        for(int i=0; i<nums.length;i++){
+            input.add(nums[i]);
+        }
+        List<Integer> curr = new ArrayList<>();
+        permute(input,curr);
+        return this.result;
+    }
+
+    public void permute(List<Integer> nums, List<Integer> seq){
+        int size = nums.size();
+        if(nums == null || size==0) return;
+        
+        for(int i=0; i<size;i++){       
+            // 回溯：把nums,seq恢复  
+            List<Integer> list = new ArrayList<>();
+            list.addAll(nums);
+            List<Integer> cur = new ArrayList<Integer>();
+            cur.addAll(seq);
+            cur.add(nums.get(i));
+            list.remove(i);
+            if(list.size()==0){
+                result.add(cur);
+            }else{
+                permute(list, cur);
+            }
+        }
+    }
+}
+```
+
+### [77. 组合](https://leetcode-cn.com/problems/combinations/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> combine(int n, int k) {
+        List<Integer> path = new ArrayList<Integer>();
+        combine(1,n,k,path);
+        return result;
+    }
+
+    public void combine(int start,int n, int k,List<Integer> path){
+        if(n == 0 || k == 0) return;
+        for(int i = 0; i<n; i++){
+            List<Integer> list = new ArrayList<>();
+            list.addAll(path);
+            list.add(start+i);
+            if(list.size() == k){
+                this.result.add(list);
+            }else if(k-list.size()>n-1-i){ // 剪枝：剩余元素不足，不需要再尝试遍历
+                continue;
+            }else{
+                combine(start+i+1,n-1-i,k,list);
+            }
+        }
+    }
+}
+```
+
+### [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<Integer> candidate = new ArrayList<Integer>();
+        Arrays.sort(candidates);  // 先排下序
+        findResult(candidates,0,candidate,0,target);
+        return result;
+    }
+
+    public void findResult(int[] candidates,int index,List<Integer> candidate,int cur, int target){
+        if(candidates == null) return;
+
+        for(int i=index; i<candidates.length; i++){
+            int total = cur + candidates[i];
+            if(total > target) continue; // 剪枝
+            List<Integer> list = new ArrayList<>();
+            list.addAll(candidate);
+            list.add(candidates[i]);
+            if(total == target){
+                result.add(list);
+                return;
+            }
+            findResult(candidates,i,list,total,target);
+        }
+    }
+}
+```
+
+### [40. 组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<Integer> candidate = new ArrayList<>();
+        Arrays.sort(candidates);
+        getResult(candidates,0,candidate,0,target);
+        return result;
+    }
+
+    void getResult(int[] candidates,int index, List<Integer> candidate, int cur, int target){
+        for(int i=index; i<candidates.length; i++){
+            if(i>index&&candidates[i] == candidates[i-1]) continue; // 去重:本层递归不能使用相同元素
+            int total = cur + candidates[i];
+            if(total > target) return;
+            List<Integer> list = new ArrayList<>();
+            list.addAll(candidate);
+            list.add(candidates[i]);
+            if(total == target){
+                result.add(list);
+            }else{
+                getResult(candidates,i+1,list,total,target);
+            }
+        }
+    }
+}
+```
+
+
+
+### [216. 组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        List<Integer> list = new ArrayList<>();
+        findResult(1,list,0,k,n);
+        return result;
+    }
+    void findResult(int start,List<Integer> result,int cur,int k ,int n){
+        for(int i=start; i<=9;i++){
+            int total = cur + i;
+            if(total > n) return;
+            List list = new ArrayList<>();
+            list.addAll(result);
+            list.add(i);
+            if( total == n ){
+                if(list.size() == k) this.result.add(list);  
+                return;
+            }
+            findResult(i+1,list,total,k,n);
+        }
+    }
+}
+```
+
+
+
+#### [78. 子集](https://leetcode-cn.com/problems/subsets/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> subsets(int[] nums) {
+        for(int i=0; i<=nums.length; i++){
+            List<Integer> list = new ArrayList<Integer>();
+            findN(nums,0,i,list);
+        }
+        return result;
+    }
+
+    // 找到元素个数为n的组合
+    public void findN(int[] nums, int start ,int n, List<Integer> result){
+        if(n == 0){
+            this.result.add(result);
+            return;
+        }
+
+        for(int i=start; i<nums.length;i++){
+            List<Integer> list = new ArrayList<Integer>();
+            list.addAll(result);
+            list.add(nums[i]);
+            if(list.size() == n){
+                this.result.add(list);
+            }else if(n-list.size()>nums.length-start-1){
+                break; //剪枝：剩余元素不足，不需要递归了
+            }else{
+                findN(nums,i+1,n,list);
+            }
+        }
+    }
+}
+```
+
+
+
+### [90. 子集 II](https://leetcode-cn.com/problems/subsets-ii/)
+
+```java
+class Solution {
+    List<List<Integer>> result = new ArrayList<List<Integer>>();
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        for(int i=0; i<=nums.length; i++){
+            List<Integer> list = new ArrayList<Integer>();
+            findN(nums,0,i,list);
+        }
+        return result;
+    }
+
+    // 找到元素个数为n的组合
+    public void findN(int[] nums, int start ,int n, List<Integer> result){
+        if(n == 0){
+            this.result.add(result);
+            return;
+        }
+
+        for(int i=start; i<nums.length;i++){
+            if(i>start && nums[i] == nums[i-1]) continue; // 去重
+            List<Integer> list = new ArrayList<Integer>();
+            list.addAll(result);
+            list.add(nums[i]);
+            if(list.size() == n){
+                this.result.add(list);
+            }else if(n-list.size()>nums.length-start-1){
+                break; //剪枝：剩余元素不足，不需要递归了
+            }else{
+                findN(nums,i+1,n,list);
+            }
+        }
+    }
+}
+```
 
 
 
