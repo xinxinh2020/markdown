@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memory-demo
+  namespace: example
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: polinux/stress
+    resources:
+      limits:
+        memory: "200Mi" # 最大内存限制
+        cpu: "1"  # 最大CPU数，单位是vCPU
+      requests:
+        memory: "100Mi"
+        cpu: "0.5"  
+    command: ["stress"]
+    args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+    volumeMounts:
+      - name: example-storage
+        mountPath: /tmp
+      - name: task-pv-storage
+        mountPath: "/mnt"
+      - name: all-in-one
+        mountPath: "/projected-volume"
+        readOnly: true
+          
+  volumes:
+  - name: example-storage
+    emptyDir: {}  # 自动在Node上创建一个临时目录挂载到容器里，当Pod从Node上迁走时会删除该目录，用于存放临时文件
+  - name: task-pv-storage
+    persistentVolumeClaim:
+      claimName: task-pv-claim
+  - name: all-in-one  # 把多个source映射到同一个卷的目录中
+    projected:
+      sources:
+      - secret:
+          name: user
+      - secret:
+          name: pass
+  securityContext:
+    runAsUser: 1000 # 容器里用ps看到的进程的用户ID为1000， id命令的uid
+    runAsGroup: 3000 # 进程的组ID为3000，如果不指定，默认为0  id命令的gid
+    fsGroup: 2000 # 创建的文件的组ID为2000 id命令的groups

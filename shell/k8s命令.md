@@ -7,6 +7,13 @@ kubectl version # 查看kubectl版本
 kubectl cluster-info # 查看集群信息
 kubectl api-versions # 获取api-versions信息
 
+kubectl rollout status deployments/kubernetes-bootcamp # 查看更新状态
+kubectl rollout undo deployments/kubernetes-bootcamp # 回滚更新
+
+kubectl create configmap test-config --from-file=configmap/ # 从文件中创建一个configmap
+	--from-env-file # env-file中只包含形如：allowed="true"的键值对配置
+kubectl create configmap special-config --from-literal=special.how=very --from-literal=special.type=charm # 从字面量中创建一个configmap
+
 # 创建对象
 kubectl run # 创建一个Deployment 
 kubectl expose # 创建一个Service 
@@ -29,6 +36,7 @@ kubectl replace --force -f *.yaml # 重建一个对象
 kubectl proxy # 运行一个代理，对外暴露HTTP API
 
 kubectl get [deployments|nodes|pods|services|serviceaccounts|secret|apiservices|rs|statefulset|endpoints]# 列出所有指定类型的对象
+	-l # 指定标签
 kubectl -n kube-system get cm kubeadm-config -oyaml # 获取集群配置信息
 kubectl describe [pod|deployment] # 查询对象详情
 kubectl delete [deployment|node] # 删除对象
@@ -57,9 +65,8 @@ kubeadm init phase upload-certs --upload-certs # 重新生成并上传证书
 kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f - # 重启pod
 kubectl cp 1.txt mysql-5fb6c74b86-xg97j:/1.txt # 拷贝文件
 
+kubectl taint nodes ln15 node-role.kubernetes.io/master=true:NoSchedule # 禁止master部署pod
 ```
-
-
 
 常用参数：
 

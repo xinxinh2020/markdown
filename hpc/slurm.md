@@ -156,8 +156,6 @@ PartitionName=debug
 
 ```
 
-
-
 # 常用命令
 
 ```shell
@@ -168,6 +166,5 @@ scancel <jobid> # 停止作业
 scontrol show partition # 显示分区信息
 scontrol show node <name> # 显示节点信息
 sinfo
-
 ```
 
