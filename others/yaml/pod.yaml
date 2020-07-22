@@ -24,14 +24,48 @@ spec:
       - name: all-in-one
         mountPath: "/projected-volume"
         readOnly: true
-    livenessProbe: # liveness探针
+    livenessProbe: # liveness探针-command
       exec:
         command:
         - cat
         - /tmp/healthy
-      initialDelaySeconds: 5
+      initialDelaySeconds: 5 # 第1次执行探针时,延迟5s执行
+      failureThreshold: 2 # 探针执行失败2次后容器状态变为失败
       periodSeconds: 5 # 每5s执行一次探针
-          
+    livenessProbe: # liveness探针-http
+      httpGet:
+        path: /healthz
+        port: 8080
+        httpHeaders:
+        - name: Custom-Header
+          value: Awesome
+      initialDelaySeconds: 3
+      periodSeconds: 3
+    livenessProbe: # liveness探针-tcpsocket
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 20
+    readinessProbe: # readinessProbe的属性和livenessProbe的属性一模一样
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    startupProbe:  # startupProbe
+      httpGet:
+        path: /healthz
+        port: liveness-port
+      failureThreshold: 30
+      periodSeconds: 10  # 容器启动30*10=300s内liveness和readiness探针不会执行，300s后startup探针还没成功，容器会被kill掉重启
+    
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - name: init-mydb
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+
   volumes:
   - name: example-storage
     emptyDir: {}  # 自动在Node上创建一个临时目录挂载到容器里，当Pod从Node上迁走时会删除该目录，用于存放临时文件
