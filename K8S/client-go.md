@@ -68,6 +68,15 @@ users:
 ## 常用操作
 
 ```go
+import (
+	appv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
+)
+
 // 查询node列表
 nodes, err := clientSet.CoreV1().Nodes().List(metav1.ListOptions{})
 
@@ -76,9 +85,11 @@ deploy, err = client.AppsV1().Deployments(d.Namespace).Create(targetDeploy)
 
 // 运行一个批处理作业
 jobcreated, err = client.BatchV1().Jobs(d.Namespace).Create(targetJob)
-// 删除job
+
+// 删除job及其对应的Pod
 clientSet.BatchV1().Jobs(namespace).Delete(name, &metav1.DeleteOptions{PropagationPolicy: &propagationPolicy}) // propagationPolicy := metav1.DeletePropagationBackground
-// 查询
+
+// 查询job
 clientSet.BatchV1().Jobs(namespace).Get(name, metav1.GetOptions{})
 ```
 

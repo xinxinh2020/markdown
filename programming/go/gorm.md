@@ -118,9 +118,8 @@ db.Not("name = ?", "jinzhu").First(&user)
 // Struct
 db.Not(User{Name: "jinzhu"}).First(&user)
 //// SELECT * FROM users WHERE name <> "jinzhu";
-=======
 
-### 增加记录
+// 增加记录
 db.NewRecord(&user) # 判断User的主键是否为空（是的话可以安全地插进数据库，不是的话也可以插入数据库，但可能会出现主键冲突的错误）
 db.Create(&user) # 插入一条记录
 
@@ -140,7 +139,9 @@ db.Find(&users) # SELECT * FROM users; 获取所有记录
 db.First(&user, 10) # SELECT * FROM users WHERE id = 10; 使用主键获取记录
 db.Where("name = ?", "jinzhu").First(&user) # SELECT * FROM users WHERE name = 'jinzhu' limit 1;
 db.Where("name = ?", "jinzhu").Find(&users) # SELECT * FROM users WHERE name = 'jinzhu'; 注意这里的users要传切片的地址，切片需要先分配内存，大小随意，只要分了就行
->>>>>>> 95680b86e77403ed5d2f8a512e3518c9043a26bb
+
+// 删除一条记录
+database.DB.Delete(&entity.WorkFlowInstance{}, "id = ?", workflowInstanceId)
 ```
 
 
@@ -148,13 +149,8 @@ db.Where("name = ?", "jinzhu").Find(&users) # SELECT * FROM users WHERE name = '
 ## 扩展方法
 
 ```shell
-<<<<<<< HEAD
-func (u User) TableName() string // 为User设置对应的表名
-
-=======
 func (u User) TableName() string # 为User设置对应的表名
 func (user *User) BeforeCreate(scope *gorm.Scope) error # 调Create方法之前的回调，可以在这里显式设置主键的值
->>>>>>> 95680b86e77403ed5d2f8a512e3518c9043a26bb
 ```
 
 
@@ -162,11 +158,7 @@ func (user *User) BeforeCreate(scope *gorm.Scope) error # 调Create方法之前�
 ## 标签
 
 ```shell
-<<<<<<< HEAD
 default // 似乎可以设置字段的默认值（未测试成功）
 func (user *User) BeforeCreate(scope *gorm.Scope) error // 调Create方法之前的回调，可以在这里显式设置主键
-=======
-default # 似乎可以设置字段的默认值（未测试成功）
->>>>>>> 95680b86e77403ed5d2f8a512e3518c9043a26bb
 ```
 

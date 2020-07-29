@@ -136,6 +136,8 @@ restartPolicy 取值：
 
 kubernetes restart pod时只会重启在同一个node上，重启的延迟为：10s，20s，40s...上限为5分钟。在成功执行10分钟后重置该延迟。一旦一个Pod被调度到一个Node上，它就和这个node绑定了，不会被调度到其他node上。
 
+重启是针对容器的，Pod没有重启的说法，要么以成功结束，要么以失败结束，要么就是运行中。
+
 当出现磁盘故障或Node故障时，Pod的阶段会变为Failed，如果它受controller管理的话，controller会在其他Node重新创建它(而不是在本机尝试重启)
 
 ## Init Container

@@ -181,6 +181,30 @@ time.Unix # 获取时间戳（从1970.1.1到当前时间的秒数）
 time.UnixNano # 获取时间戳（纳秒）
 ```
 
+常用操作：
+
+```go
+fmt.Println(time.Now().Format("2006-01-02 15:04:05"))  // 格式化当前时间
+```
+
+### 切片常用操作
+
+```go
+// 1
+var arr [5]int = [...]int {1, 2, 3, 4, 5}
+var slice = arr[1:3]
+
+// 2
+var slice []float64 = make([]float64, 5, 10)
+
+// 3
+var slice []string = []string{"zhangsan", "lisi", "wangwu"}
+```
+
+
+
+
+
 ### 内置函数
 
 ```shell
