@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: log-analyzer
+  namespace: sl-ops
+  labels:
+    app: log-analyzer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-analyzer
+  template:
+    metadata:
+      labels:
+        app: log-analyzer
+    spec:
+      nodeSelector:
+        log-analyzer: "true"
+      containers:
+      - env:
+        - name: RUN_ENV
+          value: "pro"
+        - name: DEBUG
+          value: "false"
+        name: log-analyzer
+        image: log-analyzer
+        command: ["./root/analyzer"]
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+
