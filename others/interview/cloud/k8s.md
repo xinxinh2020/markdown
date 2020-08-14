@@ -111,3 +111,46 @@ https://blog.csdn.net/kenkao/article/details/86764788
 
 
 
+## Service Account有什么用
+
+它不是给k8s集群的用户用的，它是给Pod里的服务用的
+
+
+
+## 网络基础
+
+Pod内容器网络通信：共享网络命名空间
+
+同一个Node内的Pod之间进行通信：通过docker0网桥桥接起来
+
+所有Pod的IP地址都会记录在etcd中，
+
+
+
+## Pod的调度策略
+
+- Deployment控制器自动调度
+- NodeSelector：调度到带有指定标签的节点
+- NodeAffinity：可硬限制（required）也可软限制(preffered)
+- PodAffinity：可软限制也可硬限制
+- AntiAffinity：Pod互斥性
+- Taints和Tolerations：污点的effect包括NoSchedule,PreferNoSchedule（软限制）,NoExecute（不仅不能调度，已调度的Pod也会被驱逐）
+- 优先级调度：priorityClassName,用于抢占调度
+- DaemonSet
+- Job/CronJob，Parallel控制并行度
+
+## Pod跨主机如何通信
+
+
+
+## Ingress Http 7层路由
+
+## gRPC相比restful api有什么优势
+
+- 使用protobuff来作为传输的格式
+- 数据大小比XML要小3-10倍，序列化和反序列化的速度要快100倍
+
+一个gRPC方法只接受一个Protocol buffer消息类型作为它的请求，并只返回一个Protocol buffer类型作为它的响应
+
+
+
