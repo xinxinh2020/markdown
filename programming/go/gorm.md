@@ -47,7 +47,6 @@ type User struct {
     Balance int
     Src string
     Level int
-
 }
 db.CreateTable(&User{})
 
