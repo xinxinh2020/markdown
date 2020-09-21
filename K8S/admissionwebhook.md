@@ -4,7 +4,15 @@
 
 https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/
 
-除了编译的admission插件，还可以作为插件开发并且在运行期作为webhook运行，以下介绍如何构建，配置，使用和监控admission webhook。
+除了编译的admission插件，还可以作为插件
+
+
+
+开发并且在运行期作为webhook运行，k8s api request的lifecycle如下：
+
+![k8s-api-request-lifecycle](/Users/xinxinhuang/workspaces/github/markdown/K8S/images/admissionwebhook/k8s-api-request-lifecycle.png)
+
+以下介绍如何构建，配置，使用和监控admission webhook。
 
 ## admission webhook是啥？
 
