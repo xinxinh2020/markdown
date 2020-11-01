@@ -5,7 +5,8 @@
 ```shell
 kubectl version # 查看kubectl版本
 kubectl cluster-info # 查看集群信息
-kubectl api-versions # 获取api-versions信息
+kubectl api-versions # 获取当前 k8s 支持的 <group>/<version> 信息
+kubectl api-resources # 获取当前 k8s 支持的资源列表
 
 kubectl rollout status deployments/kubernetes-bootcamp # 查看更新状态
 kubectl rollout undo deployments/kubernetes-bootcamp # 回滚更新
@@ -66,6 +67,12 @@ kubectl get pod {podname} -n {namespace} -o yaml | kubectl replace --force -f - 
 kubectl cp 1.txt mysql-5fb6c74b86-xg97j:/1.txt # 拷贝文件
 
 kubectl taint nodes ln15 node-role.kubernetes.io/master=true:NoSchedule # 禁止master部署pod
+
+kubectl rollout history deployment coding # 查看修改历史
+kubectl rollout undo deployment/abc # 回退到上个版本
+kubectl rollout undo daemonset/abc --to-revision=3 # 回退到指定版本
+
+kubectl convert -f xxx.yaml --output-version=apps/v1 # 将 GV 转换成 apps/v1
 ```
 
 常用参数：
@@ -73,5 +80,6 @@ kubectl taint nodes ln15 node-role.kubernetes.io/master=true:NoSchedule # 禁止
 ```shell
 -n # 指定namespace
 -l # 指定标签
+--kubeconfig # 指定配置文件
 ```
 

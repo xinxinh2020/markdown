@@ -4,8 +4,6 @@
 
 ## 常用命令
 
-
-
 ```shell
 docker run -it -v /home/dock/Downloads:/usr/Downloads ubuntu64 /bin/bash # 冒号前为宿主机目录，必须为绝对路径，冒号后为镜像内挂载的路径，默认权限为rw
 
@@ -19,6 +17,7 @@ docker history  c3b52b2a0265  --no-trunc # 查看镜像的构建过程
 # 导出镜像
 docker save docker.elastic.co/kibana/kibana:7.6.2 > kibana.tar
 docker save docker.elastic.co/kibana/kibana:7.6.2 -o kibana.tar
+
 # 导入镜像
 docker load < kibana.tar
 docker load -i kibana.tar
