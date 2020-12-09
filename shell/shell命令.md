@@ -37,3 +37,20 @@ python -mjson.tool # 将json字符串格式化显示
 
 ```
 
+
+
+# Shell
+
+## 打印字符的 ascii 码
+
+```shell
+printf "%d" "'a" # 打印 a 字符的 ascii 码
+```
+
+## 打印字符串的长度
+
+```shell
+a=helloworld
+echo ${#a}
+```
+

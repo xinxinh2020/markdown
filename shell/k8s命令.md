@@ -6,7 +6,8 @@
 kubectl version # 查看kubectl版本
 kubectl cluster-info # 查看集群信息
 kubectl api-versions # 获取当前 k8s 支持的 <group>/<version> 信息
-kubectl api-resources # 获取当前 k8s 支持的资源列表
+kubectl api-resources # 获取当前 k8s 支持的资源列表 
+											# --namespaced=true
 
 kubectl rollout status deployments/kubernetes-bootcamp # 查看更新状态
 kubectl rollout undo deployments/kubernetes-bootcamp # 回滚更新

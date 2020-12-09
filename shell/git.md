@@ -49,7 +49,7 @@ git stash drop # 从栈中删除stash，不应用到工作区
 git reset HEAD filename # 把暂存区的文件移除到工作区
 git checkout -- filename # 撤销工作区的修改(危险操作)
 
-git reset --soft HEAD^  # 撤回刚刚的commit，代码仍然保留
+    # 撤回刚刚的commit，代码仍然保留
 git reset --hard HEAD~1 # 撤回刚刚的commit，代码不保留
 git reset --hard origin/dev # 强制用远程分支替换本地分支，代码不保留
 
