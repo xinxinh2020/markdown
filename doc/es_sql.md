@@ -4,6 +4,8 @@
 
 
 
+在 kibana 的 DevTools
+
 ## 元数据操作
 
 ```shell

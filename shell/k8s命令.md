@@ -39,6 +39,9 @@ kubectl proxy # 运行一个代理，对外暴露HTTP API
 
 kubectl get [deployments|nodes|pods|services|serviceaccounts|secret|apiservices|rs|statefulset|endpoints]# 列出所有指定类型的对象
 	-l # 指定标签
+kubectl get validatingwebhookconfiguration
+kubectl get mutatingwebhookconfiguration
+
 kubectl -n kube-system get cm kubeadm-config -oyaml # 获取集群配置信息
 kubectl describe [pod|deployment] # 查询对象详情
 kubectl delete [deployment|node] # 删除对象
@@ -53,6 +56,8 @@ kubectl exec $POD_NAME pwd # 直接在容器里执行命令，在只有一个容
 kubectl exec -ti $POD_NAME bash # 进入到容器里面
 
 kubectl config view # 查看$KUBECONFIG中包含的配置信息
+										# --minify 查看当前上下文
+										# --flatten 将文件路径替换成内容
 kubectl config set-context ns_ctx --namespace=pangeo # 设置上下文
 kubectl config use-context ns_ctx # 使用上下文
 

@@ -12,6 +12,8 @@ go env # 查看go的环境变量
 
 ```sh
 go list -m all # 列举当前模块及其所有依赖
+go list -m -versions github.com/golang/snappy # 列举指定模块所有版本
+go mod edit -require="github.com/golang/snappy@v0.0.4"
 go mod init example.com/hello # 初始化模块
 go mod tidy # 检测目录下所有引入的依赖，写入go.mod文件
 go mod download # 下载依赖到GOPATH

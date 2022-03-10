@@ -4,6 +4,26 @@
 
 随Node启动而运行，并且只能在这个Node上运行（不会迁移），并且不会保存到etcd上，而是存放到Node上一个具体的文件中
 
+## Pod Qos 设计和实现
+
+https://zhuanlan.zhihu.com/p/110979231
+
+kubernetes 中有三种 Qos，分别为：
+
+- `Guaranteed`：pod 的 requests 与 limits 设定的值相等；
+- `Burstable`：pod requests 小于 limits 的值且不为 0；
+- `BestEffort`：pod 的 requests 与 limits 均为 0；
+
+三者优先级（依次递增）：BestEffort -> Burstable -> Guaranteed
+
+- 在调度时调度器只会根据 request 值进行调度
+- 当系统 OOM上时对于处理不同 OOMScore 的进程表现不同，OOMScore 是针对 memory 的，当宿主上 memory 不足时系统会优先 kill 掉 OOMScore 值高的进程，可以使用 `$ cat /proc/$PID/oom_score` 查看进程的 OOMScore。OOMScore 的取值范围为 [-1000, 1000]，`Guaranteed` pod 的默认值为 -998，`Burstable` pod 的值为 2~999，`BestEffort` pod 的值为 1000，也就是说当系统 OOM 时，首先会 kill 掉 `BestEffort` pod 的进程，若系统依然处于 OOM 状态，然后才会 kill 掉 `Burstable` pod，最后是 `Guaranteed` pod；
+- cgroup 的配置不同，kubelet 为会三种 Qos 分别创建对应的 QoS level cgroups，`Guaranteed` Pod Qos 的 cgroup level 会直接创建在 `RootCgroup/kubepods` 下，`Burstable` Pod Qos 的创建在 `RootCgroup/kubepods/burstable` 下，`BestEffort` Pod Qos 的创建在`RootCgroup/kubepods/BestEffort` 下
+
+如果不指定 request，会被分配一个很小的数值，cpu 为 2m(cpu.shares=2)
+
+如果资源充足，可将 QoS pods 类型均设置为`Guaranteed`。用计算资源换业务性能和稳定性，减少排查问题时间和成本。如果想更好的提高资源利用率，业务服务可以设置为Guaranteed，而其他服务根据重要程度可分别设置为Burstable或Best-Effort。
+
 ## Pod中的Pause容器有什么用
 
 1. 用来代表整个Pod，它的状态代表整个Pod的状态，避免了检测各个业务容器的状态的复杂性
@@ -115,7 +135,9 @@ https://blog.csdn.net/kenkao/article/details/86764788
 
 它不是给k8s集群的用户用的，它是给Pod里的服务用的
 
+## PodDisruptionBudget 的作用是什么
 
+https://segmentfault.com/a/1190000021856623
 
 ## 网络基础
 
@@ -126,6 +148,34 @@ Pod内容器网络通信：共享网络命名空间
 所有Pod的IP地址都会记录在etcd中，
 
 
+
+## 默认调度器的工作原理
+
+调度器的作用就是为 Pod 寻找一个最适合的 Node。具体的调度流程分为 Predicate 和 Priority，如下图所示：
+
+<img src="https://static001.geekbang.org/resource/image/bb/53/bb95a7d4962c95d703f7c69caf53ca53.jpg" alt="img" style="zoom: 4%;" />
+
+Informer 会 watch 与调度相关的对象，当一个 Pod 对象被创建出来以后，调度器就会通过 Pod Informer 的 Handler，将这个带调度的 Pod 添加进调度队列。
+
+Predicate: 进行过滤得到一组 Node。有以下几种策略
+
+- GeneralPredicates: 宿主机的 CPU 和 内存等是否够用，只计算 request 的资源；Pod 申请的宿主机端口是否已经被使用；nodeSelector/nodeAffinity 是否匹配
+- 与 Volume 相关的过滤规则：挂载的 PV 是否已经被挂载到其它 Node; PV 数量是否已经超过限制；Pod 申请的 PV 的 nodeAffinity 是否跟节点匹配。
+- 与宿主机相关的过滤规则：污点；内存是否不够充足
+- Pod 相关的过滤规则：PodAffinity/AntiAf
+
+Priority: 为上一步得到的 Pod 打分，从 0-10分，取得分最高者。
+
+- 优先选择空闲资源多的
+- 优先选择调度后资源差（如 CPU 和 内存使用率的差距）小的
+- 优先选择 NodeAffinity/PodAffinity 匹配规则多的
+- 优先选择镜像已经拉好的
+
+## Pod 调度失败后怎么办
+
+正常情况下，当一个 Pod 调度失败后，它就会被暂时“搁置”起来，直到 Pod 被更新，或者集群状态发生变化，调度器才会对这个 Pod 进行重新调度。但当一个高优先级的 Pod 调度失败后，该 Pod 并不会被“搁置”，而是会“挤走”某个 Node 上的一些低优先级的 Pod 。这样就可以保证这个高优先级 Pod 的调度成功，这个便是 Pod 的优先级和抢占机制，需要给 Pod 设置一个 PriorityClass, 值越大优先级越高，最大值为 10 亿。
+
+优先级高的 Pod 会在调度时优先处理，并且在调度失败时会触发抢占
 
 ## Pod的调度策略
 
@@ -152,5 +202,48 @@ Pod内容器网络通信：共享网络命名空间
 
 一个gRPC方法只接受一个Protocol buffer消息类型作为它的请求，并只返回一个Protocol buffer类型作为它的响应
 
+## 一个 PVC 可以给一个 Deployment 的两个 Pod 挂载吗
 
+如果用户删除被某 Pod 使用的 PVC 对象，该 PVC 申领不会被立即移除。 PVC 对象的移除会被推迟，直至其不再被任何 Pod 使用。 此外，如果管理员删除已绑定到某 PVC 申领的 PV 卷，该 PV 卷也不会被立即移除。 PV 对象的移除也要推迟到该 PV 不再绑定到 PVC
+
+
+
+## PersistentVolume 对象的回收策略
+
+- Retain: 当 PersistentVolumeClaim 对象 被删除时，PersistentVolume 卷仍然存在，对应的数据卷被视为"已释放（released）"。 由于卷上仍然存在这前一申领人的数据，该卷还不能用于其他申领。 管理员可以通过下面的步骤来手动回收该卷：
+  1. 删除 PersistentVolume 对象。与之相关的、位于外部基础设施中的存储资产 （例如 AWS EBS、GCE PD、Azure Disk 或 Cinder 卷）在 PV 删除之后仍然存在。
+  2. 根据情况，手动清除所关联的存储资产上的数据。
+  3. 手动删除所关联的存储资产；如果你希望重用该存储资产，可以基于存储资产的 定义创建新的 PersistentVolume 卷对象。
+- Delete: 删除动作会将 PersistentVolume 对象从 Kubernetes 中移除，同时也会从外部基础设施（如 AWS EBS、GCE PD、Azure Disk 或 Cinder 卷）中移除所关联的存储资产
+- Recycle: 回收策略 `Recycle` 已被废弃。取而代之的建议方案是使用动态供应
+
+## PersistentVolume 的 Phase
+
+- Available -- a free resource that is not yet bound to a claim
+- Bound -- the volume is bound to a claim
+- Released -- the claim has been deleted, but the resource is not yet reclaimed by the cluster
+- Failed -- the volume has failed its automatic reclamation
+
+## k8s 的 update 和 patch 一个资源对象的区别
+
+## Pod 的状态（Phase）
+有多个容器时，这个时候有一个容器是 ready，另一个还在 waiting，此时 Pod 的 Phase 是什么(Running)
+
+## Headless Service 是什么
+
+Headless Service 不需要分配一个 VIP，而是可以直接以 DNS 记录的方式解析出被代理 Pod 的 IP 地址。
+
+当你按照这样的方式创建了一个 Headless Service 之后，它所代理的所有 Pod 的 IP 地址，都会被绑定一个这样格式的 DNS 记录：`<pod-name>.<svc-name>.<namespace>.svc.cluster.local`
+
+## StatefulSet 是如何实现拓扑状态和存储状态管理的
+
+首先，StatefulSet 的控制器直接管理的是 Pod。这是因为，StatefulSet 里的不同 Pod 实例，不再像 ReplicaSet 中那样都是完全一样的，而是有了细微区别的。比如，每个 Pod 的 hostname、名字等都是不同的、携带了编号的。而 StatefulSet 区分这些实例的方式，就是通过在 Pod 的名字里加上事先约定好的编号。
+
+其次，Kubernetes 通过 Headless Service，为这些有编号的 Pod，在 DNS 服务器中生成带有同样编号的 DNS 记录。只要 StatefulSet 能够保证这些 Pod 名字里的编号不变，那么 Service 里类似于 web-0.nginx.default.svc.cluster.local 这样的 DNS 记录也就不会变，而这条记录解析出来的 Pod 的 IP 地址，则会随着后端 Pod 的删除和再创建而自动更新。这当然是 Service 机制本身的能力，不需要 StatefulSet 操心。
+
+最后，StatefulSet 还为每一个 Pod 分配并创建一个同样编号的 PVC。这样，Kubernetes 就可以通过 Persistent Volume 机制为这个 PVC 绑定上对应的 PV，从而保证了每一个 Pod 都拥有一个独立的 Volume。
+
+## 各种控制器是如何实现版本管理的
+
+deployment 通过 replicaset，其它控制器通过 controllerrevision
 
