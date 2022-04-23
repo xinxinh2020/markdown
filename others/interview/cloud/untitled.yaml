@@ -1,0 +1,180 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cs-artifactory
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: |
+    ewogICJhdXRocyI6ewogICAgImNsb3Vkc3R1ZGlvLWRldm9wcy1kb2NrZXIucGtnLmNvZGluZy5uZXQiOnsidXNlcm5hbWUiOiJwdDJkYzdmN2VpOGgiLCJwYXNzd29yZCI6IjdhNWM5MjljMDhhZTQ2ODIyYzEyMzQ4ZDU5MWJhZjNiY2VmOTJjMzMiLCJhdXRoIjoiY0hReVpHTTNaamRsYVRob09qZGhOV001TWpsak1EaGhaVFEyT0RJeVl6RXlNelE0WkRVNU1XSmhaak5pWTJWbU9USmpNek09In0sCiAgICAiY29kaW5nY29ycC1kb2NrZXIucGtnLmNvZGluZy5uZXQiOnsidXNlcm5hbWUiOiJwdHdmcHA3enltZ3kiLCJwYXNzd29yZCI6ImQ4MjRhMDJjODI2YWFlNDZkNmJlY2QzNTIyZDFjMDFmYmY4YzYxMmQiLCJhdXRoIjoiY0hSM1puQndOM3A1YldkNU9tUTRNalJoTURKak9ESTJZV0ZsTkRaa05tSmxZMlF6TlRJeVpERmpNREZtWW1ZNFl6WXhNbVE9In0KICB9Cn0=
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ws-kfzzpk
+    tier: workspace
+  name: ws-kfzzpk
+spec:
+  replicas: 1
+  serviceName: ""
+  selector:
+    matchLabels:
+      app: ws-kfzzpk
+      tier: workspace
+  template:
+    metadata:
+      annotations:
+        kubernetes.io/egress-bandwidth: 10M
+        kubernetes.io/ingress-bandwidth: 10M
+      labels:
+        app: ws-kfzzpk
+        tier: workspace
+      name: ws-kfzzpk
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - command:
+        - csctl
+        - run
+        - /.PlnPyKFp4CRfFtgC1/bin/supervisord
+        - -c
+        - /.PlnPyKFp4CRfFtgC1/supervisord-conf/supervisord.conf
+        env:
+        - name: IDE_RUNTIME
+          value: CONTAINER
+        - name: X_IDE_FAKE_ENV
+          value: X_IDE_FAKE_ENV
+        - name: IDE_VERSION_CONTROL_URL
+        - name: IDE_USER_SSH_PUBLIC_KEY
+          value: c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCQVFDTksyZ1FZbGEwNU90M0lWTzQ2UEtQV1BaT1A4UnZaamVveEcrenA0dFBvUGNWWTZZM241SnhBNXBJWDdTVVJTUm5LcW1pOFI0OGpxMnBlazdtN3REbTVXUk12TkpyaWtzNjJXZUJicGVjWFUxUldXU3RsQnRMNmZ0dVpncEVycnZ3VGtVeURtTWpmTWJLS25vWnpEdmQzQkVZQmMxbVZJSFZDOFBvVTcxTERzdXR0UGt5VlNKSENTMkJhVmhyVVFteUlncVcyMW1IR0ZibmZyMnc5c29vRDFxR2d0cmNGRlhFTWpPOVFpaUdiQUFyRUpLSXZsNWxBc2xTM014TEJFWmhCd2tvTUc1cVlWNU5QT0tPbXBPamZCSFBMeWdSZ3BlTDR0S3ljbkJ6TDVYUHMrWXhrdnU5STdjUDNkWUpFNUNtZlBGQm9GSlpRUU5nTEo1aTJqY1ggVnZyQ0tXRUJOcEBXZWJJREU=
+        - name: IDE_USER_SSH_PRIVATE_KEY
+          value: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBalN0b0VHSld0T1RyZHlGVHVPanlqMWoyVGovRWIyWTNxTVJ2czZlTFQ2RDNGV09tCk41K1NjUU9hU0YrMGxFVWtaeXFwb3ZFZVBJNnRxWHBPNXU3UTV1VmtUTHpTYTRwTE90bG5nVzZYbkYxTlVWbGsKclpRYlMrbjdibVlLUks2NzhFNUZNZzVqSTN6R3lpcDZHY3c3M2R3UkdBWE5abFNCMVF2RDZGTzlTdzdMcmJUNQpNbFVpUndrdGdXbFlhMUVKc2lJS2x0dFpoeGhXNTM2OXNQYktLQTlhaG9MYTNCUlZ4REl6dlVJb2htd0FLeENTCmlMNWVaUUxKVXR6TVN3UkdZUWNKS0RCdWFtRmVUVHppanBxVG8zd1J6eThvRVlLWGkrTFNzbkp3Y3krVno3UG0KTVpMN3ZTTzNEOTNXQ1JPUXBuenhRYUJTV1VFRFlDeWVZdG8zRndJREFRQUJBb0lCQUZST0VjMkhETVRtMlAvQgo5VisrTGUwUmNiWjFPbmhVa1BUR3F2YWRIZ01sMjZqNFk3RmdLSEk1ZG8rMkovOUw4MXR4RFBGMEVWeVUwSDBmCnY3TUY5OWVNTW9QcFY3aEZWSHdHalZ1c2tmb2RkaWtZdTVrMWs3K1lNa0ZSeXR3Tmhjc1MweHY3bjVUMzFUZXkKZWt5aHZUYlhUNVlMRVFrRmVxdWlaUkovdjlIc1ZZZG1KUVRJNUtYWkFhNUJwRjdVdzJGbWtSQUFnQlFnbk82RQp2WjVSYXRQY2lNVnUzcnNZNDFtdHhYZXU2YkI1U3h1N2tTbUsvcFpwd2tzbU5FT01ydnNjcDNWdE55WEVZV2lFClhKWGlMRDF5ZEtaVGpXcFEzaTFHV29GdVFTb2EzZGRsOXY1N2xLU3krUmVQQUg3VTVCU09mQ0JHNFp5alE5Sm8KWjZMVWRkRUNnWUVBMVI3d3lwQ0R1Zlc5R0FRNDBaWDVucGVRSGt3MzlIOVA2UFpPYjA0REl1RlhzblNPaUxPcgpYSXVhZklVM2x3YWRIWk1lN3Y2eGJFWWZ6YTUvZ3llL0dEWlpaalh5TENjUlFmc0tDRCtLczQ4a1FwdnFpczJxCk42Ym9vMXh1UWExMXhyL3VLalNGTkJQaTVEZVo3WlpYdWt4N2puNXl4dTRLVjQ3WXdTaGNlSXNDZ1lFQXFaS0YKNGlMVkdhMWxhZUtoazVYTGtrSERocys1TTZFRkhBcTlaTTFRWlk2eXduN3QyQ1NlYVFQeGxMbTRSaTEyMGdadAo2VUkwSTJyTWVqclVUdzFxMEVRY3BWcFJpYThMcStPbEZ3VTVCR0pmUUpvdW9CUVlLS1lKWm81aG4zaUF5UDFvCkdzQSt6YmRicCs3QW9YRE5ONXN0QW05dkdVdWFGempyK3Z0VXdTVUNnWUE1Y2ZLVGx5cDZlSHQwdXNhWjc2UHUKRklwYk1FNHcwQlE1QmhNVU8ySHJCL1I4ZktCaXhwTWRDZUFsU2o4MnJTaXliUko4ZHhoWngva1Fsc1YyRThPVgpnaWpNdlNPK3RQVVk1TkxLY0Y0eGtoYkRBWVhSemlmZ2dsUFluTFIzYllyK2ZJTjB5dDFRc1QrS0psYU9UT1R1CnFXandlckx6WGZ4WnAzNVRhazZxaXdLQmdRQ01xYnJkcHo5V21YdXlwZ2lhUUh3cHl0dkRETFQ0bXUxK0lYcVMKRDY1TlVGNEE4UUdqZGx6aGlCL3gyMDE5Q1dHelB4b1ZrSkZuZjhRMjhHNEZWWC94VzA3WDYyQVA4bUNnS2FwYwp1anhkNHF4WkRvejJ4VFIxSTZaUXFITmFzYjlDK3RKTXZvUmFhV3RpbHE2OFBMSS9HajN2OHpnWnA1a2ZBbHplClNYWTQ4UUtCZ0V4RHZtRmc2RE5lYnl0SHZ0VkhYVU83S2JUNmVuZmxtL3Y1ZU1TdVYxSkd2aGtCc1c4bkZlTk4KeGdKNndPZXZNRCtwOFJ0YnU4WDJQTmxYYk9ua3ZFcVIwQlM1enVibjk0dUdwcWxUZFUyTXM4RHo0UEVTZDltUgpsa1ZTTy9NK3IySitqSjREWlg0K2JqZ3g5WUtPL2FpZFVsSWhmWFhhMVZlNjN2S1ZBbVFzCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0t
+        - name: IDE_PREVIEW_RELEASE
+          value: disabled
+        - name: IDE_EDITOR_TYPE
+          value: VSCODE
+        - name: IDE_WORK_DIR
+          value: ~/RemoteWorking
+        - name: X_IDE_SPACE_KEY
+          value: kfzzpk
+        - name: X_IDE_SPACE_NAME
+          value: test
+        - name: X_IDE_ACCESS_TOKEN
+          value: ed9d06aad451717abdee332e5d3ed990f7c695f2
+        - name: X_IDE_API_ORIGIN
+          value: https://cloudstudio-devops.nh148gzvc.cloudstudio.net/api
+        - name: X_IDE_SERVICE_URL
+          value: https://openvsx-internal.cloudstudio.net/extensions
+        - name: SERVICE_URL
+          value: https://openvsx-internal.cloudstudio.net/extensions
+        #- name: IDE_STATIC_RESOURCE_CDN
+        #  value: https://cs-res.codehub.cn
+        - name: X_IDE_USER_EMAIL
+          value: wuhongxu@coding.net
+        - name: IDE_APP_ACCESS_URL_DOMAIN
+          value: 0-preview.nh148gzvc.cloudstudio.net
+        - name: IDE_EDITOR_SERVER_DIR
+          value: /.PlnPyKFp4CRfFtgC1
+        - name: IDE_WORKSPACE_RESET_RESOLVCONF
+          value: enabled
+        - name: SHELL
+          value: /bin/zsh
+        - name: IDE_EDITOR_SERVER_AUTH_TYPE
+          value: none
+        - name: IDE_WORKSPACE_CUSTOM_HOSTS
+          value: enabled
+        - name: IDE_EDITOR_SERVER_PORT
+          value: "65210"
+        - name: X_IDE_SPACE_HOOK_ENABLE
+          value: "true"
+        - name: X_IDE_SPACE_CREATE_AT
+          value: 2022/03/24
+        - name: X_IDE_SPACE_SIZE
+          value: "5"
+        - name: IDE_VSCODE_VERSION_UPDATE_FILE
+          value: https://cs-archive-1257242599.cos.ap-shanghai.myqcloud.com/saas/vscode-v2/prod/version.json
+        - name: IDE_USER_RUNTIME_IMAGE
+          value: cloudstudio-devops-docker.pkg.coding.net/artifacts/saas.container/workspace-ubuntu:2021.14.2
+        - name: CONTAINER_DIFF_DATA_DIR
+          value: /data/ide-home/
+        - name: CONTAINER_GRAPH_ROOT_DIR
+          value: /data/containers/storage/
+        - name: CONTAINER_WORK_DIR
+          value: /data/work
+        - name: IDE_EDITOR_SERVER_IMAGE
+          value: cloudstudio-devops-docker.pkg.coding.net/artifacts/saas.container/editor-server-image:ouiygrbfeowrubguy423r4fh
+        - name: IDE_NOT_EXECUTE_HOOK
+          value: "true"
+        - name: IDE_WORKSPACE_INIT_CMD
+          value: /.PlnPyKFp4CRfFtgC1/bin/supervisord -c /.PlnPyKFp4CRfFtgC1/supervisord-conf/supervisord.conf
+        image: cloudstudio-devops-docker.pkg.coding.net/artifacts/standard.container/csctl:20211229.1
+        imagePullPolicy: IfNotPresent
+        name: ws-kfzzpk
+        ports:
+        - containerPort: 65210
+          name: tty-65210
+          protocol: TCP
+        - containerPort: 65500
+          name: tty-65500
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            ephemeral-storage: 5Gi
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/run/secrets/coding.net/image-registry-secret.dockerconfigjson
+          name: image-registry-secret
+          readOnly: true
+          subPath: image-registry-secret.dockerconfigjson
+        - mountPath: /data/containers/storage
+          name: image-graph-root
+            #- mountPath: /data/ide-home
+            #  name: workspace-diff-data
+      imagePullSecrets:
+      - name: cs-artifactory
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+        #- name: workspace-diff-data
+        #  persistentVolumeClaim:
+        #    claimName: workspace-diff-data
+      - name: image-registry-secret
+        secret:
+          defaultMode: 420
+          items:
+          - key: .dockerconfigjson
+            path: image-registry-secret.dockerconfigjson
+          secretName: cs-artifactory
+      - hostPath:
+          path: /data/containers/storage
+      type: DirectoryOrCreate
+        name: image-graph-root
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ws-kfzzpk
+    tier: workspace
+  name: ws-kfzzpk
+spec:
+  ports:
+  - name: tty-65210
+    port: 65210
+    protocol: TCP
+    targetPort: 65210
+  - name: tty-65500
+    port: 65500
+    protocol: TCP
+    targetPort: 65500
+  selector:
+    app: ws-kfzzpk
+    tier: workspace
+  sessionAffinity: None
+  type: NodePort
