@@ -6,7 +6,9 @@
 
 Nocalhost 的核心组件是命令行工具 nhctl，IDE 插件（vscode, jetbrains）通过调用 nhctl 来对 K8S 集群中的工作负载进行操作（如进入开发模式，退出开发模式等）：
 
-<img src="/Users/xinxinhuang/Downloads/Picture1.png" alt="Picture1" style="zoom:48%;" />
+![image-20220601195359980](/Users/xinxinhuang/Workplace/markdown/cncf/nocalhost/architecture/image-20220601195359980.png)
+
+
 
 ### nhctl
 
